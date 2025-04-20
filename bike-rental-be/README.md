@@ -33,7 +33,7 @@ psql -h localhost -p 5555 -d bike_rental_system -U bike_app -W
 You will be prompted for the password you set in your `.env` file.
 
 ## Connecting to the database in IntelliJ
-In IntelliJ IDEA (or DataGrip), add a new PostgreSQL data source with the following settings:
+In IntelliJ IDEA, add a new PostgreSQL data source with the following settings:
 - Host: _localhost_
 - Port: _5555_
 - Database: _bike_rental_system_
@@ -41,7 +41,7 @@ In IntelliJ IDEA (or DataGrip), add a new PostgreSQL data source with the follow
 - Password: (enter the password from your `.env` file)
 ![img.png](img.png)
 
-## How to Setup Flyway
+## How to establish database connection
 
 Option 1: Copy `.env` to `src/main/resources/.env`
 ```bash
