@@ -4,7 +4,7 @@
 
 ## Running tests
 
-### Postman
+### API tests with Postman
 
 1. Import the [Postman collection](postman/bike-rental-api.postman_collection.json) by dragging it into Postman:
 ![README.resources/importing_collection.png](README.resources/importing_collection.png)
