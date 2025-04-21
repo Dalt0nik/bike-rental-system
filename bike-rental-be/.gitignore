@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### it's a good idea to ignore env secrets, right?
+.env
