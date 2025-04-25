@@ -1,14 +1,67 @@
 {
 	"info": {
-		"_postman_id": "35aa830a-0497-4e67-9c9e-f128cecdb159",
+		"_postman_id": "f9bd5a1b-397f-4525-a721-9ed444d56639",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43388435"
+		"_exporter_id": "31583616"
 	},
 	"item": [
 		{
 			"name": "endpoints",
-			"item": []
+			"item": [
+				{
+					"name": "bike station",
+					"item": [
+						{
+							"name": "create bike station",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"latitude\": 54.687157,\r\n  \"longitude\": 25.279652,\r\n  \"capacity\": 10,\r\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all bike stations",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		},
 		{
 			"name": "scenarios",
