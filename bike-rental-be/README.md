@@ -68,3 +68,7 @@ If using IntelliJ for building project:
     Add: POSTGRES_USER=bike_app;POSTGRES_PASSWORD=password_from_.env;POSTGRES_DB=bike_rental_system
 
 Apply changes, click ok and restart the app.
+
+## Running tests
+
+[See the testing README](src/test).
