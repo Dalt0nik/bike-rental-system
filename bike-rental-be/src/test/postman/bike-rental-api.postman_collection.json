@@ -149,6 +149,21 @@
 							"response": []
 						},
 						{
+							"name": "get bikes by station id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bikes/station/{{stationId}}",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["bikes", "station", "{{stationId}}"]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "get bike by id",
 							"request": {
 								"method": "GET",

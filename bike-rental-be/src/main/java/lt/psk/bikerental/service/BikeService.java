@@ -29,6 +29,12 @@ public class BikeService {
         return mapToDTO(bikeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found")));
     }
+    public List<BikeDTO> getAllBikesByStationId(UUID stationId) {
+        return bikeRepository.findAllByCurStation_Id(stationId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
 
     public BikeDTO createBike(CreateBikeDTO createBikeDTO) {
         Bike bike = new Bike();
