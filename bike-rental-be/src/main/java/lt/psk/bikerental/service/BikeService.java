@@ -9,6 +9,7 @@ import lt.psk.bikerental.entity.BikeState;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +41,12 @@ public class BikeService {
 
         bike.setShortUniqueName(createBikeDTO.getShortUniqueName());
         bike.setState(createBikeDTO.getState());
-        return mapToDTO(bikeRepository.save(bike));
+
+        try {
+            return mapToDTO(bikeRepository.save(bike));
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Short unique name already exists. Please retry.");
+        }
     }
 
     public void deleteBike(UUID id) {
