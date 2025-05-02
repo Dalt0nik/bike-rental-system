@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/bike-stations")
+@RequestMapping("/private/bike-stations")
 @AllArgsConstructor
 @RestController
 public class BikeStationController {

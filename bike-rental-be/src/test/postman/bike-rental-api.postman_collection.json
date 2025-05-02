@@ -27,7 +27,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/bike-stations",
+									"raw": "http://localhost:8080/private/bike-stations",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -46,7 +46,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/bike-stations",
+									"raw": "http://localhost:8080/private/bike-stations",
 									"protocol": "http",
 									"host": [
 										"localhost"
