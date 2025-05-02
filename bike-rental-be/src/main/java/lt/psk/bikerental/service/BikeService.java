@@ -45,7 +45,6 @@ public class BikeService {
             bike.setCurStation(station);
         }
 
-        bike.setShortUniqueName(createBikeDTO.getShortUniqueName());
         bike.setState(createBikeDTO.getState());
 
         try {
@@ -72,7 +71,6 @@ public class BikeService {
             bike.setCurStation(station);
         }
 
-        bike.setShortUniqueName(updateDTO.getShortUniqueName());
         bike.setState(updateDTO.getState());
         return mapToDTO(bikeRepository.save(bike));
     }
@@ -81,7 +79,6 @@ public class BikeService {
         return BikeDTO.builder()
                 .id(bike.getId())
                 .curStationId(bike.getCurStation() != null ? bike.getCurStation().getId() : null)
-                .shortUniqueName(bike.getShortUniqueName())
                 .state(bike.getState())
                 .build();
     }

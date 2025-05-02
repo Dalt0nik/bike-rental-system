@@ -108,7 +108,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"FREE\",\n  \"shortUniqueName\": \"BIKE-003\"\n}",
+									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"FREE\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -190,7 +190,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"IN_USE\",\n  \"shortUniqueName\": \"BIKE-002\"\n}",
+									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"IN_USE\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"

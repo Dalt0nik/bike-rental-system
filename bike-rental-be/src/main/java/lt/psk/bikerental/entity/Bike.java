@@ -28,6 +28,4 @@ public class Bike {
     @Column(nullable = false)
     private BikeState state = BikeState.FREE;
 
-    @Column(name = "short_unique_name", nullable = false, unique = true)
-    private String shortUniqueName;
 }

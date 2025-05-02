@@ -15,6 +15,4 @@ public class CreateBikeDTO {
     @NotNull(message = "State is required")
     private BikeState state;
 
-    @NotBlank(message = "Short unique name is required")
-    private String shortUniqueName;
 }

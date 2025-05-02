@@ -12,5 +12,4 @@ public class BikeDTO {
     private UUID id;
     private UUID curStationId;
     private BikeState state;
-    private String shortUniqueName;
 }
