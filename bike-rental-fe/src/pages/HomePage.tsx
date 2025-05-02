@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef} from 'react';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Map as LeafletMap } from 'leaflet';
 import L from 'leaflet';
+import { getBikeStations } from '../api/bikeStationApi';
+import { useQuery } from "@tanstack/react-query";
 
 // Fix Leaflet marker icons
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -18,26 +20,15 @@ const defaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = defaultIcon;
 
-// Define the data shape from backend
-type BikeStation = {
-    id: string;
-    latitude: number;
-    longitude: number;
-    capacity: number;
-    address: string;
-};
-
 function HomePage() {
     const mapRef = useRef<LeafletMap | null>(null);
-    const [stations, setStations] = useState<BikeStation[]>([]);
+    const { data: stations = [], isLoading, isError } = useQuery({
+        queryKey: ['bikeStations'],
+        queryFn: getBikeStations
+    });
 
-    useEffect(() => {
-        // Fetch stations from backend
-        fetch('http://localhost:8080/bike-stations')
-            .then(res => res.json())
-            .then(data => setStations(data))
-            .catch(err => console.error('Error fetching bike stations:', err));
-    }, []);
+    if (isLoading) return <div>Loading map...</div>;
+    if (isError) return <div>Error loading stations.</div>;
 
     return (
         <div style={{
