@@ -130,6 +130,54 @@
 							"response": []
 						},
 						{
+							"name": "bulk create bikes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bikes = pm.response.json();",
+											"console.log(\"Created\", bikes.length, \"bikes.\");",
+											"if (bikes.length > 0) {",
+											"    pm.environment.set(\"bulkBikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bulkBikeId:\", bikes[0].id);",
+											"}",
+											"pm.test(\"Bulk bike creation succeeded\", function () {",
+											"    pm.expect(bikes.length).to.be.above(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bikeStationId\": \"{{stationId}}\",\n  \"numberOfBikes\": 3\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/bulk",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["bikes", "bulk"]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "get all bikes",
 							"request": {
 								"method": "GET",

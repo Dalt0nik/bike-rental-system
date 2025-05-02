@@ -3,6 +3,7 @@ package lt.psk.bikerental.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.DTO.Bike.BikeDTO;
+import lt.psk.bikerental.DTO.Bike.BulkCreateBikeDTO;
 import lt.psk.bikerental.DTO.Bike.CreateBikeDTO;
 import lt.psk.bikerental.service.BikeService;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,10 @@ public class BikeController {
     @PostMapping
     public BikeDTO createBike(@Valid @RequestBody CreateBikeDTO createBikeDTO) {
         return bikeService.createBike(createBikeDTO);
+    }
+    @PostMapping("/bulk")
+    public List<BikeDTO> bulkCreateBikes(@Valid @RequestBody BulkCreateBikeDTO request) {
+        return bikeService.bulkCreateBikes(request.getBikeStationId(), request.getNumberOfBikes());
     }
 
     @PutMapping("/{id}")

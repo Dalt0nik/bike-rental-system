@@ -12,6 +12,7 @@ import lt.psk.bikerental.repository.BikeStationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +54,24 @@ public class BikeService {
             throw new RuntimeException("Short unique name already exists. Please retry.");
         }
     }
+
+    public List<BikeDTO> bulkCreateBikes(UUID stationId, int numberOfBikes) {
+        BikeStation station = bikeStationRepository.findById(stationId)
+                .orElseThrow(() -> new EntityNotFoundException("Station not found"));
+
+        List<Bike> bikes = new ArrayList<>();
+
+        for (int i = 0; i < numberOfBikes; i++) {
+            Bike bike = new Bike();
+            bike.setCurStation(station);
+            bike.setState(BikeState.FREE);
+            bikes.add(bike);
+        }
+
+        List<Bike> saved = bikeRepository.saveAll(bikes);
+        return saved.stream().map(this::mapToDTO).toList();
+    }
+
 
     public void deleteBike(UUID id) {
         if (!bikeRepository.existsById(id)) {
