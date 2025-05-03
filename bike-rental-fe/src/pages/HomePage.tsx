@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Map as LeafletMap } from 'leaflet';
 import L from 'leaflet';
-import { getBikeStations } from '../api/bikeStationApi';
+import { getAllBikeStations } from '../api/bikeStationApi';
 import { useQuery } from "@tanstack/react-query";
 
 // Fix Leaflet marker icons
@@ -23,8 +23,8 @@ L.Marker.prototype.options.icon = defaultIcon;
 function HomePage() {
     const mapRef = useRef<LeafletMap | null>(null);
     const { data: stations = [], isLoading, isError } = useQuery({
-        queryKey: ['bikeStations'],
-        queryFn: getBikeStations
+        queryKey: ['allBikeStations'],
+        queryFn: getAllBikeStations
     });
 
     if (isLoading) return <div>Loading map...</div>;
@@ -73,6 +73,7 @@ function HomePage() {
                             <Popup>
                                 <strong>{station.address}</strong><br />
                                 Capacity: {station.capacity}
+                                Count: {station.count}
                             </Popup>
                         </Marker>
                     ))}

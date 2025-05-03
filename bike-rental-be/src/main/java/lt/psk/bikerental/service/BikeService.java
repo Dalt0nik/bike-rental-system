@@ -12,6 +12,7 @@ import lt.psk.bikerental.repository.BikeStationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class BikeService {
                 .toList();
     }
 
+    @Transactional
     public BikeDTO createBike(CreateBikeDTO createBikeDTO) {
         Bike bike = modelMapper.map(createBikeDTO, Bike.class);
 
@@ -62,6 +64,7 @@ public class BikeService {
         }
     }
 
+    @Transactional
     public List<BikeDTO> bulkCreateBikes(UUID stationId, int numberOfBikes) {
         BikeStation station = bikeStationRepository.findById(stationId)
                 .orElseThrow(() -> new EntityNotFoundException("Station not found"));
@@ -79,6 +82,7 @@ public class BikeService {
         return saved.stream().map(this::mapToDTO).toList();
     }
 
+    @Transactional
     public void deleteBike(UUID id) {
         if (!bikeRepository.existsById(id)) {
             throw new EntityNotFoundException("Bike not found");
@@ -86,6 +90,7 @@ public class BikeService {
         bikeRepository.deleteById(id);
     }
 
+    @Transactional
     public BikeDTO updateBike(UUID id, CreateBikeDTO updateDTO) {
         Bike bike = bikeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));

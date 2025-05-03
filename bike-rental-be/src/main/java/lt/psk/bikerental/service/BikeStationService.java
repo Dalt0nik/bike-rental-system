@@ -1,7 +1,6 @@
 package lt.psk.bikerental.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
@@ -12,6 +11,7 @@ import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeStationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -70,16 +70,23 @@ public class BikeStationService {
     }
 
     public BikeStationPreviewDTO mapToPreviewDTO(BikeStation station) {
-        BikeStationPreviewDTO preview = modelMapper.map(station, BikeStationPreviewDTO.class);
-        preview.setCount(station.getBikes().size());
-        return preview;
+        BikeStationPreviewDTO previewDto = modelMapper.map(station, BikeStationPreviewDTO.class);
+
+        previewDto.setCount(0);
+        if (station.getBikes() != null)
+            previewDto.setCount(station.getBikes().size());
+
+        return previewDto;
     }
 
     public BikeStationDTO mapToDTO(BikeStation station) {
         BikeStationDTO dto = modelMapper.map(station, BikeStationDTO.class);
-        dto.setBikes(station.getBikes().stream()
-                .map(b -> modelMapper.map(b, BikeDTO.class))
-                .toList());
+
+        if (station.getBikes() != null) {
+            dto.setBikes(station.getBikes().stream()
+                    .map(b -> modelMapper.map(b, BikeDTO.class))
+                    .toList());
+        }
 
         return dto;
     }
