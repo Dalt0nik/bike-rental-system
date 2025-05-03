@@ -9,6 +9,7 @@ import lt.psk.bikerental.entity.BikeState;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +20,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BikeService {
+
     private final BikeRepository bikeRepository;
+
     private final BikeStationRepository bikeStationRepository;
 
+    private final ModelMapper modelMapper;
+
     public List<BikeDTO> getAllBikes() {
-        return bikeRepository.findAll().stream().map(this::mapToDTO).toList();
+        return bikeRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     public BikeDTO getBikeById(UUID id) {
-        return mapToDTO(bikeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Bike not found")));
+        Bike bike = bikeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
+        return mapToDTO(bike);
     }
+
     public List<BikeDTO> getAllBikesByStationId(UUID stationId) {
         return bikeRepository.findAllByCurStation_Id(stationId)
                 .stream()
@@ -38,15 +47,13 @@ public class BikeService {
     }
 
     public BikeDTO createBike(CreateBikeDTO createBikeDTO) {
-        Bike bike = new Bike();
+        Bike bike = modelMapper.map(createBikeDTO, Bike.class);
 
         if (createBikeDTO.getCurrentBikeStationId() != null) {
             BikeStation station = bikeStationRepository.findById(createBikeDTO.getCurrentBikeStationId())
                     .orElseThrow(() -> new EntityNotFoundException("Station not found"));
             bike.setCurStation(station);
         }
-
-        bike.setState(createBikeDTO.getState());
 
         try {
             return mapToDTO(bikeRepository.save(bike));
@@ -72,7 +79,6 @@ public class BikeService {
         return saved.stream().map(this::mapToDTO).toList();
     }
 
-
     public void deleteBike(UUID id) {
         if (!bikeRepository.existsById(id)) {
             throw new EntityNotFoundException("Bike not found");
@@ -95,10 +101,10 @@ public class BikeService {
     }
 
     private BikeDTO mapToDTO(Bike bike) {
-        return BikeDTO.builder()
-                .id(bike.getId())
-                .curStationId(bike.getCurStation() != null ? bike.getCurStation().getId() : null)
-                .state(bike.getState())
-                .build();
+        BikeDTO dto = modelMapper.map(bike, BikeDTO.class);
+        if (bike.getCurStation() != null) {
+            dto.setCurStationId(bike.getCurStation().getId());
+        }
+        return dto;
     }
 }
