@@ -27,6 +27,7 @@ public class BikeController {
     public BikeDTO getBikeById(@PathVariable UUID id) {
         return bikeService.getBikeById(id);
     }
+
     @GetMapping("/station/{stationId}")
     public List<BikeDTO> getAllBikesByStationId(@PathVariable UUID stationId) {
         return bikeService.getAllBikesByStationId(stationId);

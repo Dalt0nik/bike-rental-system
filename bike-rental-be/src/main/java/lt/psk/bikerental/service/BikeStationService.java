@@ -1,14 +1,20 @@
 package lt.psk.bikerental.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
+import lt.psk.bikerental.DTO.BikeStation.BikeStationPreviewDTO;
 import lt.psk.bikerental.DTO.BikeStation.CreateBikeStationDTO;
+import lt.psk.bikerental.DTO.BikeStation.UpdateBikeStationDTO;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeStationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Service
@@ -18,15 +24,63 @@ public class BikeStationService {
 
     private final ModelMapper modelMapper;
 
-    public List<BikeStationDTO> getAllBikeStations() {
+    public List<BikeStationPreviewDTO> getAllBikeStations() {
         return bikeStationRepository.findAll().stream()
-                .map(b -> modelMapper.map(b, BikeStationDTO.class))
+                .map(this::mapToPreviewDTO)
                 .toList();
     }
 
+    public BikeStationDTO getBikeStation(UUID id) {
+        return bikeStationRepository.findById(id)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Bike station not found"));
+    }
+
+    @Transactional
     public BikeStationDTO createBikeStation(CreateBikeStationDTO dto) {
         BikeStation entity = modelMapper.map(dto, BikeStation.class);
         BikeStation saved = bikeStationRepository.save(entity);
-        return modelMapper.map(saved, BikeStationDTO.class);
+
+        return mapToDTO(saved);
+    }
+
+    @Transactional
+    public BikeStationDTO updateBikeStation(UUID id, UpdateBikeStationDTO dto) {
+        BikeStation station = bikeStationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bike station not found"));
+
+        if (dto.getCapacity() != null) {
+            if (dto.getCapacity() < station.getBikes().size())
+                throw new RuntimeException("Bike station cannot have less capacity than current bikes");
+            station.setCapacity(dto.getCapacity());
+        }
+
+        station.setAddress(dto.getAddress());
+
+        BikeStation saved = bikeStationRepository.save(station);
+        return mapToDTO(saved);
+    }
+
+    @Transactional
+    public void deleteBikeStation(UUID id) {
+        if (!bikeStationRepository.existsById(id))
+            throw new EntityNotFoundException("Bike station not found");
+
+        bikeStationRepository.deleteById(id);
+    }
+
+    public BikeStationPreviewDTO mapToPreviewDTO(BikeStation station) {
+        BikeStationPreviewDTO preview = modelMapper.map(station, BikeStationPreviewDTO.class);
+        preview.setCount(station.getBikes().size());
+        return preview;
+    }
+
+    public BikeStationDTO mapToDTO(BikeStation station) {
+        BikeStationDTO dto = modelMapper.map(station, BikeStationDTO.class);
+        dto.setBikes(station.getBikes().stream()
+                .map(b -> modelMapper.map(b, BikeDTO.class))
+                .toList());
+
+        return dto;
     }
 }
