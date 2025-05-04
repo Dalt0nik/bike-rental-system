@@ -35,8 +35,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/public/**").permitAll()
-                    .requestMatchers("/private/**").authenticated()
+                    .requestMatchers("/**").authenticated()
                     .requestMatchers("/private-scoped/**").hasAuthority("SCOPE_read:profile") // this requestMatchers is created for testing purposes to show how to access scoped endpoints
             )
             .cors(c -> c.configurationSource(corsConfigurationSource()))

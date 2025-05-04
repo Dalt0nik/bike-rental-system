@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/private/bike-stations")
+@RequestMapping("/bike-stations")
 @AllArgsConstructor
 @RestController
 public class BikeStationController {

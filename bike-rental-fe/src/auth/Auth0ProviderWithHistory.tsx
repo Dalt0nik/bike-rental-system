@@ -1,6 +1,7 @@
-import { Auth0Provider } from "@auth0/auth0-react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
+import { setTokenGetter } from "../api/Api"; // import the setter you created
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
@@ -9,6 +10,23 @@ const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 interface Auth0AppState {
     returnTo?: string;
 }
+
+const Auth0TokenProvider = ({ children }: PropsWithChildren) => {
+    const { getAccessTokenSilently } = useAuth0();
+
+    useEffect(() => {
+        setTokenGetter(async () =>
+            await getAccessTokenSilently({
+                authorizationParams: {
+                    audience: audience,
+                },
+            })
+        );
+    }, [getAccessTokenSilently]);
+
+
+    return <>{children}</>;
+};
 
 export const Auth0ProviderWithHistory = ({ children }: PropsWithChildren) => {
     const navigate = useNavigate();
@@ -27,7 +45,9 @@ export const Auth0ProviderWithHistory = ({ children }: PropsWithChildren) => {
             }}
             onRedirectCallback={onRedirectCallback}
         >
-            {children}
+            <Auth0TokenProvider>
+                {children}
+            </Auth0TokenProvider>
         </Auth0Provider>
     );
 };
