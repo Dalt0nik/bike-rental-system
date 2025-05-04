@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "f9bd5a1b-397f-4525-a721-9ed444d56639",
+		"_postman_id": "72682607-f636-4208-a087-4c9b321b3d9d",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "31583616"
+		"_exporter_id": "31840975"
 	},
 	"item": [
 		{
@@ -14,12 +14,25 @@
 					"item": [
 						{
 							"name": "create bike station",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let responseData = pm.response.json();",
+											"pm.environment.set(\"stationId\", responseData.id);",
+											"console.log(\"Saved stationId:\", responseData.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
 							"request": {
 								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"latitude\": 54.687157,\r\n  \"longitude\": 25.279652,\r\n  \"capacity\": 10,\r\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\r\n}",
+									"raw": "{\n  \"latitude\": 54.687157,\n  \"longitude\": 25.279652,\n  \"capacity\": 10,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -54,6 +67,214 @@
 									"port": "8080",
 									"path": [
 										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "bike",
+					"item": [
+						{
+							"name": "create bike",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bike = pm.response.json();",
+											"pm.environment.set(\"bikeId\", bike.id);",
+											"console.log(\"Saved bikeId:\", bike.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"FREE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "bulk create bikes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bikes = pm.response.json();",
+											"console.log(\"Created\", bikes.length, \"bikes.\");",
+											"if (bikes.length > 0) {",
+											"    pm.environment.set(\"bulkBikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bulkBikeId:\", bikes[0].id);",
+											"}",
+											"pm.test(\"Bulk bike creation succeeded\", function () {",
+											"    pm.expect(bikes.length).to.be.above(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bikeStationId\": \"{{stationId}}\",\n  \"numberOfBikes\": 3\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/bulk",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["bikes", "bulk"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all bikes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bikes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get bikes by station id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bikes/station/{{stationId}}",
+									"protocol": "http",
+									"host": ["localhost"],
+									"port": "8080",
+									"path": ["bikes", "station", "{{stationId}}"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get bike by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bikes/{{bikeId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"{{bikeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update bike",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"IN_USE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/{{bikeId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"{{bikeId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete bike",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bikes/{{bikeId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"{{bikeId}}"
 									]
 								}
 							},
