@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';  // Import HomePage component
-import RequireLogin from './auth/RequireLogin';  // Import HomePage component
+import HomePage from './pages/HomePage';
+import RequireLogin from './auth/RequireLogin';
 
 function App() {
     return (

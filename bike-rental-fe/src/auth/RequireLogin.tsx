@@ -11,7 +11,7 @@ const RequireLogin = ({ children }: { children: React.ReactNode }) => {
     }, [isLoading, isAuthenticated, loginWithRedirect]);
 
     if (isLoading || !isAuthenticated) {
-        return <div>Loading...</div>; // Show something while waiting
+        return <div>Loading...</div>;
     }
 
     return <>{children}</>;

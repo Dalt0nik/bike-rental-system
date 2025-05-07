@@ -1,4 +1,4 @@
-package lt.psk.bikerental.security;
+package lt.psk.bikerental.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

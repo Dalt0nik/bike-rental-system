@@ -1,7 +1,7 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { PropsWithChildren, useEffect } from "react";
-import { setTokenGetter } from "../api/Api"; // import the setter you created
+import { setTokenGetter } from "../api/Api";
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
