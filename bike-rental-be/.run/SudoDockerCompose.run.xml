@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="LaunchDockerContainer" type="ShConfigurationType">
+  <configuration default="false" name="SudoDockerCompose" type="ShConfigurationType">
     <option name="SCRIPT_TEXT" value="sudo docker compose up -d" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
