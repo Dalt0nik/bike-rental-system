@@ -12,7 +12,7 @@ cp .env.example .env
 
 ```
 
-Open `.env` and fill in _POSTGRES_PASSWORD_ secret value.
+Open `.env` and fill in _POSTGRES_PASSWORD_, _OKTA_OAUTH2_ISSUER_, and _OKTA_OAUTH2_AUDIENCE_ secret values.
 
 ## Running PostgreSQL
 
@@ -65,7 +65,7 @@ If using IntelliJ for building project:
 
     Click Modify Options → Environment Variables.
 
-    Add: POSTGRES_USER=bike_app;POSTGRES_PASSWORD=password_from_.env;POSTGRES_DB=bike_rental_system
+    Add: POSTGRES_USER=bike_app;POSTGRES_PASSWORD=password_from_.env;POSTGRES_DB=bike_rental_system;OKTA_OAUTH2_ISSUER=issuer_from_.env;OKTA_OAUTH2_AUDIENCE=audience_from_.env;
 
 Apply changes, click ok and restart the app.
 
