@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/users")
@@ -22,8 +21,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<Void> register(@AuthenticationPrincipal Jwt jwt)
     {
-        log.info("Registering user: {}", jwt.getClaimAsString("sub"));
-        boolean isCreated = userService.insertUser();
+        boolean isCreated = userService.insertUser(jwt);
         return isCreated
                 ? ResponseEntity.status(HttpStatus.CREATED).build()
                 : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
