@@ -97,8 +97,8 @@ function HomePage() {
                         >
                             <Popup>
                                 <strong>{station.address}</strong><br />
-                                Capacity: {station.capacity}<br />
-                                Count: {station.count}
+                                Free Bikes: {station.freeBikes}<br />
+                                Capacity: {station.capacity}
                             </Popup>
                         </Marker>
                     ))}

@@ -2,7 +2,6 @@ package lt.psk.bikerental.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationPreviewDTO;
 import lt.psk.bikerental.DTO.BikeStation.CreateBikeStationDTO;
@@ -26,13 +25,13 @@ public class BikeStationService {
 
     public List<BikeStationPreviewDTO> getAllBikeStations() {
         return bikeStationRepository.findAll().stream()
-                .map(this::mapToPreviewDTO)
+                .map(x -> modelMapper.map(x, BikeStationPreviewDTO.class))
                 .toList();
     }
 
     public BikeStationDTO getBikeStation(UUID id) {
         return bikeStationRepository.findById(id)
-                .map(this::mapToDTO)
+                .map(x -> modelMapper.map(x, BikeStationDTO.class))
                 .orElseThrow(() -> new EntityNotFoundException("Bike station not found"));
     }
 
@@ -41,7 +40,7 @@ public class BikeStationService {
         BikeStation entity = modelMapper.map(dto, BikeStation.class);
         BikeStation saved = bikeStationRepository.save(entity);
 
-        return mapToDTO(saved);
+        return modelMapper.map(saved, BikeStationDTO.class);
     }
 
     @Transactional
@@ -58,7 +57,7 @@ public class BikeStationService {
         station.setAddress(dto.getAddress());
 
         BikeStation saved = bikeStationRepository.save(station);
-        return mapToDTO(saved);
+        return modelMapper.map(saved, BikeStationDTO.class);
     }
 
     @Transactional
@@ -67,27 +66,5 @@ public class BikeStationService {
             throw new EntityNotFoundException("Bike station not found");
 
         bikeStationRepository.deleteById(id);
-    }
-
-    public BikeStationPreviewDTO mapToPreviewDTO(BikeStation station) {
-        BikeStationPreviewDTO previewDto = modelMapper.map(station, BikeStationPreviewDTO.class);
-
-        previewDto.setCount(0);
-        if (station.getBikes() != null)
-            previewDto.setCount(station.getBikes().size());
-
-        return previewDto;
-    }
-
-    public BikeStationDTO mapToDTO(BikeStation station) {
-        BikeStationDTO dto = modelMapper.map(station, BikeStationDTO.class);
-
-        if (station.getBikes() != null) {
-            dto.setBikes(station.getBikes().stream()
-                    .map(b -> modelMapper.map(b, BikeDTO.class))
-                    .toList());
-        }
-
-        return dto;
     }
 }

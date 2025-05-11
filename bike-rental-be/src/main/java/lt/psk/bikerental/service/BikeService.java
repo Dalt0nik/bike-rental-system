@@ -30,20 +30,20 @@ public class BikeService {
 
     public List<BikeDTO> getAllBikes() {
         return bikeRepository.findAll().stream()
-                .map(this::mapToDTO)
+                .map(x -> modelMapper.map(x, BikeDTO.class))
                 .toList();
     }
 
     public BikeDTO getBikeById(UUID id) {
         Bike bike = bikeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
-        return mapToDTO(bike);
+        return modelMapper.map(bike, BikeDTO.class);
     }
 
     public List<BikeDTO> getAllBikesByStationId(UUID stationId) {
         return bikeRepository.findAllByCurStation_Id(stationId)
                 .stream()
-                .map(this::mapToDTO)
+                .map(x -> modelMapper.map(x, BikeDTO.class))
                 .toList();
     }
 
@@ -51,14 +51,8 @@ public class BikeService {
     public BikeDTO createBike(CreateBikeDTO createBikeDTO) {
         Bike bike = modelMapper.map(createBikeDTO, Bike.class);
 
-        if (createBikeDTO.getCurrentBikeStationId() != null) {
-            BikeStation station = bikeStationRepository.findById(createBikeDTO.getCurrentBikeStationId())
-                    .orElseThrow(() -> new EntityNotFoundException("Station not found"));
-            bike.setCurStation(station);
-        }
-
         try {
-            return mapToDTO(bikeRepository.save(bike));
+            return modelMapper.map(bikeRepository.save(bike), BikeDTO.class);
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Short unique name already exists. Please retry.");
         }
@@ -79,7 +73,7 @@ public class BikeService {
         }
 
         List<Bike> saved = bikeRepository.saveAll(bikes);
-        return saved.stream().map(this::mapToDTO).toList();
+        return saved.stream().map(x -> modelMapper.map(x, BikeDTO.class)).toList();
     }
 
     @Transactional
@@ -102,14 +96,6 @@ public class BikeService {
         }
 
         bike.setState(updateDTO.getState());
-        return mapToDTO(bikeRepository.save(bike));
-    }
-
-    private BikeDTO mapToDTO(Bike bike) {
-        BikeDTO dto = modelMapper.map(bike, BikeDTO.class);
-        if (bike.getCurStation() != null) {
-            dto.setCurStationId(bike.getCurStation().getId());
-        }
-        return dto;
+        return modelMapper.map(bikeRepository.save(bike), BikeDTO.class);
     }
 }

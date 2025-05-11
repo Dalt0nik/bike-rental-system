@@ -21,7 +21,9 @@ public class BikeStationPreviewDTO {
 
     private Integer capacity;
 
-    private Integer count;
+    private Integer freeBikes;
+
+    private Integer freeCapacity;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String address;

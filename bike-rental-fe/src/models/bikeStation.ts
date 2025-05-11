@@ -5,7 +5,8 @@ export interface BikeStationPreviewResponse {
     latitude: number;
     longitude: number;
     capacity: number;
-    count: number;
+    freeBikes: number;
+    freeCapacity: number;
     address?: string;
 }
 
