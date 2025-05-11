@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Map as LeafletMap } from 'leaflet';
 import L from 'leaflet';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getAllBikeStations } from '../api/bikeStationApi';
 import { useQuery } from "@tanstack/react-query";
 
@@ -27,6 +28,8 @@ function HomePage() {
         queryFn: getAllBikeStations
     });
 
+    const { user, isAuthenticated, logout } = useAuth0();
+
     if (isLoading) return <div>Loading map...</div>;
     if (isError) return <div>Error loading stations.</div>;
 
@@ -42,12 +45,34 @@ function HomePage() {
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
-                paddingLeft: '16px',
+                justifyContent: 'space-between',
+                padding: '0 16px',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 zIndex: 1000
             }}>
-                <div style={{ fontWeight: 'bold', fontSize: '20px'}}>Bike Rental Map</div>
+                <div style={{ fontWeight: 'bold', fontSize: '20px' }}>Bike Rental Map</div>
+
+                {isAuthenticated && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: '26px' }}>
+                        <span>Welcome, {user?.email}</span>
+                        <button
+                            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                            style={{
+                                backgroundColor: 'white',
+                                color: '#3B82F6',
+                                border: 'none',
+                                padding: '6px 30px',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            Log Out
+                        </button>
+                    </div>
+                )}
             </div>
+
 
             <div style={{
                 flex: 1, position: 'relative', width: '100vw',

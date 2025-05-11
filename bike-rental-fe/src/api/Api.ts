@@ -9,3 +9,17 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+let getToken: (() => Promise<string>) | null = null;
+
+export function setTokenGetter(fn: () => Promise<string>) {
+  getToken = fn;
+}
+
+api.interceptors.request.use(async (config) => {
+  if (getToken) {
+    const token = await getToken();
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => Promise.reject(error));
