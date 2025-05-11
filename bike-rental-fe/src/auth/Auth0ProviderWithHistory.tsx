@@ -1,7 +1,7 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { PropsWithChildren, useEffect } from "react";
-import { setTokenGetter } from "../api/Api";
+import { setTokenGetter, api } from "../api/Api";
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
@@ -12,7 +12,7 @@ interface Auth0AppState {
 }
 
 const Auth0TokenProvider = ({ children }: PropsWithChildren) => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
     useEffect(() => {
         setTokenGetter(async () =>
@@ -23,6 +23,18 @@ const Auth0TokenProvider = ({ children }: PropsWithChildren) => {
             })
         );
     }, [getAccessTokenSilently]);
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        (async () => {
+        try {
+            await api.post("/users/register");
+        } catch (err) {
+            console.error("User registration failed", err);
+        }
+        })();
+    }, [isAuthenticated]);
 
 
     return <>{children}</>;
