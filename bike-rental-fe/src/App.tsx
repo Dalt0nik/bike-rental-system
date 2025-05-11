@@ -1,13 +1,14 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';  // Import HomePage component
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import RequireLogin from './auth/RequireLogin';
 
 function App() {
     return (
-        <Router>
+        <RequireLogin>
             <Routes>
-                <Route path="/" element={<HomePage />} />  {/* HomePage as the default route */}
+                <Route path="/" element={<HomePage />} />
             </Routes>
-        </Router>
+        </RequireLogin>
     );
 }
 
