@@ -1,6 +1,5 @@
 package lt.psk.bikerental.service;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
@@ -16,8 +15,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -50,13 +47,12 @@ public class UserService {
         String auth0Id = token.getClaim("sub").toString();
 
         if(userRepository.findByAuth0Id(auth0Id).isPresent()) {
-        return false;
+            return false;
         }
         
         UserInfoDTO userInfoDTO = getUserInfoFromAuth(token);
-        log.info("user: {}", userInfoDTO);
-//        User newUser = modelMapper.map(userInfoDTO, User.class);
-//        userRepository.save(newUser);
+        User newUser = modelMapper.map(userInfoDTO, User.class);
+        userRepository.save(newUser);
         return true;
     }
 }

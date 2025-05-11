@@ -30,7 +30,6 @@ const Auth0TokenProvider = ({ children }: PropsWithChildren) => {
         (async () => {
         try {
             await api.post("/users/register");
-            console.log("User registration succeeded");
         } catch (err) {
             console.error("User registration failed", err);
         }
