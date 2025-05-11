@@ -53,7 +53,7 @@ public class ModelMapperConfig {
         Converter<BikeStation, Integer> bikeStationFreeCapacityConverter = v -> v.getSource().getCapacity() - v.getSource().getBikes().size();
 
         Converter<List<Bike>, List<BikeDTO>> bikeStationBikesToBikeDTOsConverter = v -> v.getSource() != null
-                ? v.getSource().stream().map(x -> new BikeDTO(x.getId(), null, x.getState())).toList()
+                ? v.getSource().stream().map(x -> new BikeDTO(x.getId(), x.getCurStation().getId(), x.getState())).toList()
                 : new LinkedList<>();
 
         mapper.createTypeMap(BikeStation.class, BikeStationDTO.class)
