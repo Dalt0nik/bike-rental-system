@@ -1,10 +1,11 @@
+
 import { useRef } from "react"
 import "leaflet/dist/leaflet.css"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import type { Map as LeafletMap } from "leaflet"
 import L from "leaflet"
 import { useQuery } from "@tanstack/react-query"
-import { getBikeStations } from "../api/bikeStationApi"
+import { getAllBikeStations } from '../api/bikeStationApi';
 import Header from "../components/Header"
 
 // Fix Leaflet marker icons
@@ -24,8 +25,8 @@ L.Marker.prototype.options.icon = defaultIcon
 export default function HomePage() {
   const mapRef = useRef<LeafletMap | null>(null)
   const { data: stations = [], isLoading, isError } = useQuery({
-    queryKey: ["bikeStations"],
-    queryFn: getBikeStations,
+    queryKey: ['allBikeStations'],
+    queryFn: getAllBikeStations
   })
 
   if (isLoading)
@@ -64,6 +65,8 @@ export default function HomePage() {
             >
               <Popup>
                 <strong>{station.address}</strong>
+                <br />
+                Free Bikes: {station.freeBikes}
                 <br />
                 Capacity: {station.capacity}
               </Popup>

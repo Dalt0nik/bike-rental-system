@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "72682607-f636-4208-a087-4c9b321b3d9d",
+		"_postman_id": "8196ca86-a6a5-4b05-a6a0-1855498d5dd8",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "31840975"
+		"_exporter_id": "43388435"
 	},
 	"item": [
 		{
@@ -13,6 +13,25 @@
 					"name": "bike station",
 					"item": [
 						{
+							"name": "get all bike stations",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "create bike station",
 							"event": [
 								{
@@ -20,10 +39,21 @@
 									"script": {
 										"exec": [
 											"let responseData = pm.response.json();",
-											"pm.environment.set(\"stationId\", responseData.id);",
-											"console.log(\"Saved stationId:\", responseData.id);"
+											"pm.collectionVariables.set(\"bikeStationId\", responseData.id);",
+											"console.log(\"Saved bikeStationId:\", responseData.id);"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -54,19 +84,117 @@
 							"response": []
 						},
 						{
-							"name": "get all bike stations",
+							"name": "get bike station",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/bike-stations",
+									"raw": "http://localhost:8080/bike-stations/{{bikeStationId}}",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bike-stations"
+										"bike-stations",
+										"{{bikeStationId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update bike station",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"capacity\": 10,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations/{{bikeStationId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations",
+										"{{bikeStationId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete bike station",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.unset(\"bikeStationId\");",
+											"console.log(\"Removed bikeStationId\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations/{{bikeStationId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations",
+										"{{bikeStationId}}"
 									]
 								}
 							},
@@ -108,7 +236,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"FREE\"\n}",
+									"raw": "{\n  \"currentBikeStationId\": \"{{bikeStationId}}\",\n  \"state\": \"FREE\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -146,7 +274,8 @@
 											"    pm.expect(bikes.length).to.be.above(0);",
 											"});"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -160,7 +289,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"bikeStationId\": \"{{stationId}}\",\n  \"numberOfBikes\": 3\n}",
+									"raw": "{\n  \"bikeStationId\": \"{{bikeStationId}}\",\n  \"numberOfBikes\": 3\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -170,9 +299,14 @@
 								"url": {
 									"raw": "http://localhost:8080/bikes/bulk",
 									"protocol": "http",
-									"host": ["localhost"],
+									"host": [
+										"localhost"
+									],
 									"port": "8080",
-									"path": ["bikes", "bulk"]
+									"path": [
+										"bikes",
+										"bulk"
+									]
 								}
 							},
 							"response": []
@@ -192,21 +326,6 @@
 									"path": [
 										"bikes"
 									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "get bikes by station id",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/bikes/station/{{stationId}}",
-									"protocol": "http",
-									"host": ["localhost"],
-									"port": "8080",
-									"path": ["bikes", "station", "{{stationId}}"]
 								}
 							},
 							"response": []
@@ -238,7 +357,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"currentBikeStationId\": \"{{stationId}}\",\n  \"state\": \"IN_USE\"\n}",
+									"raw": "{\n  \"currentBikeStationId\": \"{{bikeStationId}}\",\n  \"state\": \"IN_USE\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -283,10 +402,40 @@
 					]
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		},
 		{
-			"name": "scenarios",
-			"item": []
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "bikeStationId",
+			"value": "00000000-0000-0000-0000-000000000000",
+			"type": "default"
+		},
+		{
+			"key": "bikeId",
+			"value": "00000000-0000-0000-0000-000000000000",
+			"type": "default"
 		}
 	]
 }

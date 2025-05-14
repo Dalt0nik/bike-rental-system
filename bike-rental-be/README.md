@@ -1,3 +1,13 @@
+## Index
+- [Index](#index)
+- [Prerequisites](#prerequisites)
+- [Environment Variables](#environment-variables)
+- [Running PostgreSQL](#running-postgresql)
+- [Connecting to the database](#connecting-to-the-database)
+- [Connecting to the database in IntelliJ](#connecting-to-the-database-in-intellij)
+- [How to establish database connection](#how-to-establish-database-connection)
+- [Running tests](#running-tests)
+
 ## Prerequisites
 
 - Docker and Docker Compose installed on your machine. ([docs how to install](https://docs.docker.com/engine/install/))
@@ -39,7 +49,7 @@ In IntelliJ IDEA, add a new PostgreSQL data source with the following settings:
 - Database: _bike_rental_system_
 - User: _bike_app_
 - Password: (enter the password from your `.env` file)
-![img.png](img.png)
+![README.resources/connecting_intellij.png](README.resources/connecting_intellij.png)
 
 ## How to establish database connection
 

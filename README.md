@@ -12,5 +12,5 @@ This system provides:
 
 ## Repository Structure
 
-- `bike-rental-fe/`: React application with the user interface
-- `bike-rental-be/`: Spring Boot application providing the API
+- [`bike-rental-fe/`](bike-rental-fe): React application with the user interface
+- [`bike-rental-be/`](bike-rental-be): Spring Boot application providing the API

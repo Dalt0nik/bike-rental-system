@@ -1,7 +1,10 @@
 import { api } from "./Api";
-import { BikeStationResponse } from "../models/bikeStation/bikeStationResponse";
+import { BikeStationPreviewResponse } from "../models/bikeStation";
 
-export async function getBikeStations(): Promise<BikeStationResponse[]> {
-    const response = await api.get<BikeStationResponse[]>("/bike-stations");
-    return response.data;
+export async function getAllBikeStations(): Promise<BikeStationPreviewResponse[]> {
+    return (await api.get<BikeStationPreviewResponse[]>("/bike-stations")).data;
+}
+
+export async function getBikeStation(id: string): Promise<BikeStationPreviewResponse[]> {
+    return (await api.get<BikeStationPreviewResponse[]>(`/bike-stations/${id}`)).data;
 }

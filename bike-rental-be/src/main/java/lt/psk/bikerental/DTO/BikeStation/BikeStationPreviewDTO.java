@@ -5,16 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lt.psk.bikerental.DTO.Bike.BikeDTO;
 
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BikeStationDTO {
+public class BikeStationPreviewDTO {
     private UUID id;
 
     private Double latitude;
@@ -23,7 +21,9 @@ public class BikeStationDTO {
 
     private Integer capacity;
 
-    private List<BikeDTO> bikes;
+    private Integer freeBikes;
+
+    private Integer freeCapacity;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String address;
