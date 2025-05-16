@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8196ca86-a6a5-4b05-a6a0-1855498d5dd8",
+		"_postman_id": "c4ec14df-2caa-4444-836e-c4d442ee8a29",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43388435"
+		"_exporter_id": "29989928"
 	},
 	"item": [
 		{
@@ -400,6 +400,49 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "booking",
+					"item": [
+						{
+							"name": "create booking",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"bookedBikeId\": \"{{bikeId}}\",\r\n  \"userId\": \"{{userId}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bookings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
@@ -434,6 +477,16 @@
 		},
 		{
 			"key": "bikeId",
+			"value": "00000000-0000-0000-0000-000000000000",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": "00000000-0000-0000-0000-000000000000",
+			"type": "default"
+		},
+		{
+			"key": "userId",
 			"value": "00000000-0000-0000-0000-000000000000",
 			"type": "default"
 		}

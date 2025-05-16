@@ -6,11 +6,13 @@ import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.Bike.CreateBikeDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationPreviewDTO;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.BikeState;
-import lt.psk.bikerental.entity.BikeStation;
+import lt.psk.bikerental.DTO.Booking.BookingDTO;
+import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import lt.psk.bikerental.repository.BookingRepository;
+import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.Conditions;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -26,6 +28,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ModelMapperConfig {
     private final BikeStationRepository bikeStationRepository;
+
+    private final UserRepository userRepository;
+
+    private final BookingRepository bookingRepository;
 
     private final BikeRepository bikeRepository;
 
@@ -43,7 +49,17 @@ public class ModelMapperConfig {
         Converter<Bike, UUID> bikeUUIDConverter = v -> v.getSource().getId();
         Converter<UUID, Bike> uuidBikeConverter = v -> bikeRepository
                 .findById(v.getSource())
-                .orElseThrow(() -> new EntityNotFoundException("Station not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
+
+        Converter<Booking, UUID> bookingUUIDConverter = v -> v.getSource().getId();
+        Converter<UUID, Booking> uuidBookingConverter = v -> bookingRepository
+                .findById(v.getSource())
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+        Converter<User, UUID> userUUIDConverter = v -> v.getSource().getId();
+        Converter<UUID, User> uuidUserConverter = v -> userRepository
+                .findById(v.getSource())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // BikeStation-DTO specific converters, mappings
         Converter<BikeStation, Integer> bikeStationFreeBikesConverter = v -> (int)v.getSource().getBikes().stream()
@@ -83,6 +99,24 @@ public class ModelMapperConfig {
                         .using(uuidBikeStationConverter)
                         .map(CreateBikeDTO::getCurrentBikeStationId, Bike::setCurStation));
 
+        // Booking-DTO specific converters, mappings
+        mapper.createTypeMap(Booking.class, BookingDTO.class)
+                .addMappings(m -> m
+                        .using(bikeUUIDConverter)
+                        .map(Booking::getBike, BookingDTO::setBookedBikeId))
+                .addMappings(m -> m
+                        .using(userUUIDConverter)
+                        .map(Booking::getUser, BookingDTO::setUserId));
+
+        mapper.createTypeMap(CreateBookingDTO.class, Booking.class)
+                .addMappings(m -> m
+                        .when(Conditions.isNotNull())
+                        .using(uuidBikeConverter)
+                        .map(CreateBookingDTO::getBookedBikeId, Booking::setBike))
+                .addMappings(m -> m
+                        .when(Conditions.isNotNull())
+                        .using(uuidUserConverter)
+                        .map(CreateBookingDTO::getUserId, Booking::setUser));
 
         return mapper;
     }
