@@ -8,6 +8,7 @@ import lt.psk.bikerental.DTO.BikeStation.CreateBikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.UpdateBikeStationDTO;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ public class BikeStationService {
     private final BikeStationRepository bikeStationRepository;
 
     private final ModelMapper modelMapper;
+
+    private final WsEventSendingService wsEventSendingService;
 
     public List<BikeStationPreviewDTO> getAllBikeStations() {
         return bikeStationRepository.findAll().stream()
@@ -57,6 +60,9 @@ public class BikeStationService {
         station.setAddress(dto.getAddress());
 
         BikeStation saved = bikeStationRepository.save(station);
+
+        wsEventSendingService.sendStationUpdated(id);
+
         return modelMapper.map(saved, BikeStationDTO.class);
     }
 
