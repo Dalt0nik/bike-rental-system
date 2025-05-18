@@ -16,6 +16,9 @@ public class Bike {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
 //    @Column(name = "cur_user_id")
 //    private User curUserId;
