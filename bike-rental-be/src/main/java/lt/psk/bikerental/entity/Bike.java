@@ -17,9 +17,6 @@ public class Bike {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-//    @Column(name = "cur_user_id")
-//    private User curUserId;
-
     @ManyToOne
     @JoinColumn(name = "cur_station_id", referencedColumnName = "id")
     private BikeStation curStation;
