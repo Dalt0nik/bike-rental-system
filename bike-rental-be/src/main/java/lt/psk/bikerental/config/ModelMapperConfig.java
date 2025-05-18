@@ -38,7 +38,8 @@ public class ModelMapperConfig {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         // Entity-ID converters
-        Converter<BikeStation, UUID> bikeStationUUIDConverter = v -> v.getSource().getId();
+        Converter<BikeStation, UUID> bikeStationUUIDConverter = v ->
+                v.getSource() != null ? v.getSource().getId() : null;
         Converter<UUID, BikeStation> uuidBikeStationConverter = v -> bikeStationRepository
                 .findById(v.getSource())
                 .orElseThrow(() -> new EntityNotFoundException("Station not found"));

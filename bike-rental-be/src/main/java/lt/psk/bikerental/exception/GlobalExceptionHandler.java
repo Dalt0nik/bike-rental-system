@@ -42,4 +42,15 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());
     }
+    @ExceptionHandler({
+            BikeNotAvailableException.class,
+            InvalidBookingException.class,
+            ActiveTripExistsException.class
+    })
+    public ResponseEntity<String> handleTripValidationExceptions(RuntimeException ex) {
+        log.warn("Validation error: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
 }

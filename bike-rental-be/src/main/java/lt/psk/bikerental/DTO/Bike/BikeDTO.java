@@ -16,7 +16,7 @@ import java.util.UUID;
 public class BikeDTO {
     private UUID id;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private UUID curStationId;
 
     private BikeState state;

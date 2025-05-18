@@ -15,6 +15,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static lt.psk.bikerental.entity.BikeState.IN_USE;
+
 @Service
 @RequiredArgsConstructor
 public class TripService {
@@ -23,6 +25,7 @@ public class TripService {
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
     private final ModelMapper mapper;
+    private final TripValidator tripValidator;
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
@@ -32,12 +35,8 @@ public class TripService {
         String auth0Id = jwt.getSubject();
         User user = userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        // check if user has a booking, then booked bike id should match desired bike, otherwise abort
 
-        // check if user already has rent bike then abort
-
-        // check if bike is free, otherwise abort
-
+        tripValidator.validateStartTrip(bike, user, dto.getBikeId());
 
         Trip trip = new Trip();
         trip.setBike(bike);
@@ -47,6 +46,7 @@ public class TripService {
 
         // remove bike from station
         bike.setCurStation(null);
+        bike.setState(IN_USE);
 
         return mapper.map(saved, TripDTO.class);
     }
