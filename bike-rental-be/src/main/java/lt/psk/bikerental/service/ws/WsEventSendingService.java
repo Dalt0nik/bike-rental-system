@@ -16,7 +16,7 @@ public class WsEventSendingService {
 
     public void sendStationUpdated(UUID stationId) {
         messagingTemplate.convertAndSend(
-                "/map",
+                "/topic/map",
                 Map.of(
                         "event", "station_updated",
                         "stationId", stationId,

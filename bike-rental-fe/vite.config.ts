@@ -8,4 +8,26 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  define: {
+    global: 'window', 
+  },
+  server: {
+    proxy: {
+      '/ws': {
+        target: 'http://localhost:8080',
+        ws: true,
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'Connection': 'upgrade',
+          'Upgrade': 'websocket'
+        }
+      },
+      '/ws/**': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  }
 })
