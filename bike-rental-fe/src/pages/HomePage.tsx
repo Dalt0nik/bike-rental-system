@@ -1,5 +1,4 @@
-
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import "leaflet/dist/leaflet.css"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import type { Map as LeafletMap } from "leaflet"
@@ -7,6 +6,7 @@ import L from "leaflet"
 import { useQuery } from "@tanstack/react-query"
 import { getAllBikeStations } from '../api/bikeStationApi';
 import Header from "../components/Header"
+import { useMapWebSocket, StationUpdated } from "../hooks/useMapWebSocket";
 
 // Fix Leaflet marker icons
 import iconUrl from "leaflet/dist/images/marker-icon.png"
@@ -29,6 +29,19 @@ export default function HomePage() {
     queryFn: getAllBikeStations
   })
 
+  const { init, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
+    console.log("Station updated:", update);
+  });
+
+  useEffect(() => {
+    init();
+
+    return () => {
+      deactivateConnection();
+    };
+  }, []);
+
+
   if (isLoading)
     return (
       <div className="flex items-center justify-center h-screen">
@@ -43,6 +56,7 @@ export default function HomePage() {
     )
 
   return (
+    
     <div className="fixed inset-0 flex flex-col">
       <Header />
 
