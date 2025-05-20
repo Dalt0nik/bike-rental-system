@@ -441,6 +441,47 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "deactivate booking",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bookings/{{bookingId}}/deactivate",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings",
+										"{{bookingId}}",
+										"deactivate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get booking",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bookings/{{bookingId}}",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bookings",
+										"{{bookingId}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				}
@@ -487,6 +528,11 @@
 		},
 		{
 			"key": "userId",
+			"value": "00000000-0000-0000-0000-000000000000",
+			"type": "default"
+		},
+		{
+			"key": "bookingId",
 			"value": "00000000-0000-0000-0000-000000000000",
 			"type": "default"
 		}

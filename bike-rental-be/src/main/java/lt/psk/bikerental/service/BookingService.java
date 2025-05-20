@@ -51,6 +51,11 @@ public class BookingService {
     public void deactivateBooking(UUID id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
+
+        if (!booking.isActive()) {
+            throw new IllegalStateException("Booking is already inactive");
+        }
+
         booking.setActive(false);
         booking.getBike().setState(BikeState.FREE);
         bikeRepository.save(booking.getBike());
