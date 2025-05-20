@@ -11,8 +11,6 @@ import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
 import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
-import lt.psk.bikerental.repository.BookingRepository;
-import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.Conditions;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -28,10 +26,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ModelMapperConfig {
     private final BikeStationRepository bikeStationRepository;
-
-    private final UserRepository userRepository;
-
-    private final BookingRepository bookingRepository;
 
     private final BikeRepository bikeRepository;
 
@@ -51,15 +45,7 @@ public class ModelMapperConfig {
                 .findById(v.getSource())
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
 
-        Converter<Booking, UUID> bookingUUIDConverter = v -> v.getSource().getId();
-        Converter<UUID, Booking> uuidBookingConverter = v -> bookingRepository
-                .findById(v.getSource())
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-
         Converter<User, UUID> userUUIDConverter = v -> v.getSource().getId();
-        Converter<UUID, User> uuidUserConverter = v -> userRepository
-                .findById(v.getSource())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         // BikeStation-DTO specific converters, mappings
         Converter<BikeStation, Integer> bikeStationFreeBikesConverter = v -> (int)v.getSource().getBikes().stream()
@@ -112,11 +98,7 @@ public class ModelMapperConfig {
                 .addMappings(m -> m
                         .when(Conditions.isNotNull())
                         .using(uuidBikeConverter)
-                        .map(CreateBookingDTO::getBookedBikeId, Booking::setBike))
-                .addMappings(m -> m
-                        .when(Conditions.isNotNull())
-                        .using(uuidUserConverter)
-                        .map(CreateBookingDTO::getUserId, Booking::setUser));
+                        .map(CreateBookingDTO::getBookedBikeId, Booking::setBike));
 
         return mapper;
     }

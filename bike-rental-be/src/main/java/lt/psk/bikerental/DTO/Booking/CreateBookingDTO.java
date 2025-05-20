@@ -9,6 +9,4 @@ public class CreateBookingDTO {
     @NotNull(message = "Bike ID is required")
     private UUID bookedBikeId;
 
-    @NotNull(message = "User ID is required")
-    private UUID userId;
 }

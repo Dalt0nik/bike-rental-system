@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Getter
@@ -26,7 +27,10 @@ public class Booking {
     private Bike bike;
 
     @Column(nullable = false)
-    private Timestamp startTime;
+    private Instant startTime = Instant.now();
+
+    @Column(nullable = false)
+    private Instant finishTime = startTime.plus(20, ChronoUnit.MINUTES);
 
     @Column(nullable = false)
     private boolean isActive = true;

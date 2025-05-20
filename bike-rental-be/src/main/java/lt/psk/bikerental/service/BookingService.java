@@ -7,12 +7,16 @@ import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
 import lt.psk.bikerental.entity.Bike;
 import lt.psk.bikerental.entity.BikeState;
 import lt.psk.bikerental.entity.Booking;
+import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
+import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -23,21 +27,29 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
 
+    private final UserRepository userRepository;
+
     private final ModelMapper modelMapper;
 
-    public BookingDTO createBooking(CreateBookingDTO createBookingDTO) {
-        Booking booking = modelMapper.map(createBookingDTO, Booking.class);
-        booking.setStartTime(new Timestamp(System.currentTimeMillis()));
-        booking.setActive(true);
+    private final BookingValidator bookingValidator;
 
+    @Transactional
+    public BookingDTO createBooking(CreateBookingDTO createBookingDTO, Jwt jwt) {
         Bike bike = bikeRepository.findById(createBookingDTO.getBookedBikeId())
                 .orElseThrow(() -> new RuntimeException("Bike not found"));
 
-        if (!bike.getState().equals(BikeState.FREE)) {
-            throw new RuntimeException("Bike is not available");
-        }
+        String auth0Id = jwt.getSubject();
+        User user = userRepository.findByAuth0Id(auth0Id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        bookingValidator.validateBookingCreation(bike, user);
+
         bike.setState(BikeState.BOOKED);
         bikeRepository.save(bike);
+
+        Booking booking = new Booking();
+        booking.setBike(bike);
+        booking.setUser(user);
 
         return modelMapper.map(bookingRepository.save(booking), BookingDTO.class);
     }
@@ -48,6 +60,7 @@ public class BookingService {
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
     }
 
+    @Transactional
     public void deactivateBooking(UUID id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
@@ -56,9 +69,19 @@ public class BookingService {
             throw new IllegalStateException("Booking is already inactive");
         }
 
+        Instant now = Instant.now();
+        if (now.isAfter(booking.getFinishTime())) {
+            throw new IllegalStateException("Booking is already inactive (time's up)"); // by this time active should be false
+        }
+        else if (now.isBefore(booking.getFinishTime())) {
+            booking.setFinishTime(now);
+        }
+
         booking.setActive(false);
         booking.getBike().setState(BikeState.FREE);
+
         bikeRepository.save(booking.getBike());
         bookingRepository.save(booking);
     }
+
 }
