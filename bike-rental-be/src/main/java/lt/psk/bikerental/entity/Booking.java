@@ -19,11 +19,11 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user; // maybe just ID is better?
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "booked_bike_id", referencedColumnName = "id")
-    private Bike bike; // maybe just ID is better?
+    private Bike bike;
 
     @Column(nullable = false)
     private Timestamp startTime;
