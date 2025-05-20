@@ -421,7 +421,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"bookedBikeId\": \"{{bikeId}}\",\r\n  \"userId\": \"{{userId}}\"\r\n}",
+									"raw": "{\r\n  \"bookedBikeId\": \"{{bikeId}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -445,6 +445,16 @@
 						{
 							"name": "deactivate booking",
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "PATCH",
 								"header": [],
 								"url": {
@@ -466,18 +476,27 @@
 						{
 							"name": "get booking",
 							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/bookings/{{bookingId}}",
+									"raw": "http://localhost:8080/bookings{{bookingId}}",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bookings",
-										"{{bookingId}}"
+										"bookings{{bookingId}}"
 									]
 								}
 							},
@@ -523,11 +542,6 @@
 		},
 		{
 			"key": "token",
-			"value": "00000000-0000-0000-0000-000000000000",
-			"type": "default"
-		},
-		{
-			"key": "userId",
 			"value": "00000000-0000-0000-0000-000000000000",
 			"type": "default"
 		},
