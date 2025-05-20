@@ -1,8 +1,10 @@
 CREATE TABLE bookings
 (
-    id             UUID NOT NULL,
+    id             UUID    NOT NULL,
     user_id        UUID,
     booked_bike_id UUID,
+    start_time     TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    is_active      BOOLEAN NOT NULL,
     CONSTRAINT pk_bookings PRIMARY KEY (id)
 );
 

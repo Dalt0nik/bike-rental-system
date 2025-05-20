@@ -5,10 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
 import lt.psk.bikerental.service.BookingService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/bookings")
@@ -20,4 +19,13 @@ public class BookingController {
     public BookingDTO createBooking(@Valid @RequestBody CreateBookingDTO createBookingDTO) {
         return bookingService.createBooking(createBookingDTO);
     }
+
+    @GetMapping("/{id}")
+    public BookingDTO getBooking(@PathVariable UUID id) {
+        return bookingService.getBooking(id);
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public void deactivateBooking(@PathVariable UUID id) { bookingService.deactivateBooking(id); }
+
 }

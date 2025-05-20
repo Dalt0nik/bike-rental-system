@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Builder
@@ -20,4 +21,9 @@ public class BookingDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID userId;
+
+    private Timestamp startTime;
+
+    private boolean isActive;
+
 }
