@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -24,5 +26,9 @@ public class Bike {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BikeState state = BikeState.FREE;
+
+    @OneToMany(mappedBy = "bike")
+    private List<Booking> bookings = new ArrayList<>();
+
 
 }
