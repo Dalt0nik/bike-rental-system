@@ -6,6 +6,12 @@ import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.Bike.CreateBikeDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationPreviewDTO;
+import lt.psk.bikerental.entity.Bike;
+import lt.psk.bikerental.entity.BikeState;
+import lt.psk.bikerental.entity.BikeStation;
+import lt.psk.bikerental.entity.Trip;
+import lt.psk.bikerental.DTO.Trip.TripDTO;
+
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
 import lt.psk.bikerental.entity.*;
@@ -35,7 +41,8 @@ public class ModelMapperConfig {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         // Entity-ID converters
-        Converter<BikeStation, UUID> bikeStationUUIDConverter = v -> v.getSource().getId();
+        Converter<BikeStation, UUID> bikeStationUUIDConverter = v ->
+                v.getSource() != null ? v.getSource().getId() : null;
         Converter<UUID, BikeStation> uuidBikeStationConverter = v -> bikeStationRepository
                 .findById(v.getSource())
                 .orElseThrow(() -> new EntityNotFoundException("Station not found"));
@@ -85,6 +92,10 @@ public class ModelMapperConfig {
                         .using(uuidBikeStationConverter)
                         .map(CreateBikeDTO::getCurrentBikeStationId, Bike::setCurStation));
 
+        // Trip, TripDTO mapping
+        mapper.createTypeMap(Trip.class, TripDTO.class)
+                .addMappings(m -> m.map(src -> src.getBike().getId(), TripDTO::setBikeId))
+                .addMappings(m -> m.map(src -> src.getUser().getId(), TripDTO::setUserId));
         // Booking-DTO specific converters, mappings
         mapper.createTypeMap(Booking.class, BookingDTO.class)
                 .addMappings(m -> m
