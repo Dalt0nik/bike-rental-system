@@ -1,18 +1,19 @@
 package lt.psk.bikerental.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.entity.Bike;
 import lt.psk.bikerental.entity.BikeState;
+import lt.psk.bikerental.entity.Booking;
 import lt.psk.bikerental.entity.Trip;
-import lt.psk.bikerental.entity.TripState;
 import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.exception.ActiveTripExistsException;
 import lt.psk.bikerental.exception.BikeNotAvailableException;
 import lt.psk.bikerental.exception.InvalidBookingException;
+import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.TripRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,32 +22,48 @@ import java.util.UUID;
 public class TripValidator {
 
     private final TripRepository tripRepository;
+    private final BookingRepository bookingRepository;
 
     public void validateStartTrip(Bike bike, User user, UUID requestedBikeId) {
-        checkBikeIsFree(bike);
-        checkUserHasMatchingBooking(user, requestedBikeId);
         checkUserHasNoOngoingTrip(user);
+        checkUserHasNoOtherOngoingBooking(user, requestedBikeId);
+        checkBikeIsNotInUse(bike);
+        checkBikeIsNotBookedByAnotherUser(bike, user);
     }
 
-    private void checkBikeIsFree(Bike bike) {
-        if (bike.getState() != BikeState.FREE) {
-            throw new BikeNotAvailableException("Bike is not available for rent");
+    private void checkBikeIsNotInUse(Bike bike) {
+        if (bike.getState() == BikeState.IN_USE) {
+            throw new BikeNotAvailableException("Bike is already in use");
         }
     }
 
-    private void checkUserHasMatchingBooking(User user, UUID requestedBikeId) {
-        Optional<Trip> booking = tripRepository.findTopByUserAndStateOrderByStartTimeDesc(user, TripState.BOOKED);
-        if (booking.isPresent()) {
-            UUID bookedBikeId = booking.get().getBike().getId();
-            if (!bookedBikeId.equals(requestedBikeId)) {
-                throw new InvalidBookingException("You have a booking for a different bike");
-            }
+    private void checkBikeIsNotBookedByAnotherUser(Bike bike, User currentUser) {
+        Instant now = Instant.now();
+
+        Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+                bike.getId(), now, now
+        );
+
+        if (booking.isPresent() && !booking.get().getUser().getId().equals(currentUser.getId())) {
+            throw new BikeNotAvailableException("This bike is currently booked by another user");
+        }
+    }
+
+    private void checkUserHasNoOtherOngoingBooking(User user, UUID requestedBikeId) {
+        Instant now = Instant.now();
+
+        Optional<Booking> conflictingBooking = bookingRepository.findFirstByUserIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+                user.getId(), now, now
+        );
+
+        if (conflictingBooking.isPresent() && !conflictingBooking.get().getBike().getId().equals(requestedBikeId)) {
+            throw new InvalidBookingException("You have an active booking for a different bike");
         }
     }
 
     private void checkUserHasNoOngoingTrip(User user) {
-        Optional<Trip> active = tripRepository.findTopByUserAndState(user, TripState.ONGOING);
-        if (active.isPresent()) {
+        Optional<Trip> activeTrip = tripRepository.findTopByUserAndFinishTimeIsNull(user);
+        if (activeTrip.isPresent()) {
             throw new ActiveTripExistsException("You already have an active trip");
         }
     }

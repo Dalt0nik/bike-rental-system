@@ -12,4 +12,5 @@ public interface TripRepository extends JpaRepository<Trip, UUID> {
     Optional<Trip> findTopByUserAndState(User user, TripState state);
 
     Optional<Trip> findTopByUserAndStateOrderByStartTimeDesc(User user, TripState state);
+    Optional<Trip> findTopByUserAndFinishTimeIsNull(User user);
 }
