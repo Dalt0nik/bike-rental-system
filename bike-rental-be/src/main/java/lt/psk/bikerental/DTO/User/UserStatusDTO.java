@@ -1,5 +1,6 @@
 package lt.psk.bikerental.DTO.User;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +13,8 @@ import lt.psk.bikerental.DTO.Trip.TripDTO;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserStatusDTO {
-    private boolean hasActiveBooking;
-    private boolean hasOngoingTrip;
-    private boolean free;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BookingDTO booking;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private TripDTO trip;
 }

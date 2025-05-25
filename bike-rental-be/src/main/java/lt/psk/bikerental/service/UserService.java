@@ -72,19 +72,17 @@ public class UserService {
         User user = userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Optional<Booking> bookingOpt = bookingRepository.findFirstByUserIdAndIsActiveTrue(user.getId());
-        Optional<Trip> tripOpt = tripRepository.findTopByUserAndState(user, TripState.ONGOING);
+        BookingDTO bookingDTO = bookingRepository
+                .findFirstByUserIdAndIsActiveTrue(user.getId())
+                .map(b -> modelMapper.map(b, BookingDTO.class))
+                .orElse(null);
 
-        boolean hasBooking = bookingOpt.isPresent();
-        boolean hasTrip = tripOpt.isPresent();
-
-        BookingDTO bookingDTO = bookingOpt.map(b -> modelMapper.map(b, BookingDTO.class)).orElse(null);
-        TripDTO tripDTO = tripOpt.map(t -> modelMapper.map(t, TripDTO.class)).orElse(null);
+        TripDTO tripDTO = tripRepository
+                .findTopByUserAndState(user, TripState.ONGOING)
+                .map(t -> modelMapper.map(t, TripDTO.class))
+                .orElse(null);
 
         return UserStatusDTO.builder()
-                .hasActiveBooking(hasBooking)
-                .hasOngoingTrip(hasTrip)
-                .free(!hasBooking && !hasTrip)
                 .booking(bookingDTO)
                 .trip(tripDTO)
                 .build();
