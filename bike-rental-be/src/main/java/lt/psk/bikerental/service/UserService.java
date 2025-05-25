@@ -36,7 +36,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final TripRepository tripRepository;
-    private final BikeRepository bikeRepository;
 
     final static String userInfoPath = "/userinfo";
 
