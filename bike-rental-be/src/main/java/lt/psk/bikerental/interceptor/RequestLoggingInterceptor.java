@@ -44,7 +44,8 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         }
 
         var queryString = request.getQueryString();
-        queryString = queryString != null ? queryString : "";
+        queryString = queryString != null ? "?" + queryString : "";
+
         log.info("%s (%s): %s to %s%s"
                 .formatted(user.getFullName(),
                         user.getId().toString(),
