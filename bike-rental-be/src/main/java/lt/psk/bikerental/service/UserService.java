@@ -1,9 +1,17 @@
 package lt.psk.bikerental.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lt.psk.bikerental.DTO.Bike.BikeDTO;
+import lt.psk.bikerental.DTO.Booking.BookingDTO;
+import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.DTO.User.UserStatusDTO;
+import lt.psk.bikerental.entity.*;
+import lt.psk.bikerental.repository.BikeRepository;
+import lt.psk.bikerental.repository.BookingRepository;
+import lt.psk.bikerental.repository.TripRepository;
 import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +34,8 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final TripRepository tripRepository;
 
     final static String userInfoPath = "/userinfo";
 
@@ -55,4 +67,25 @@ public class UserService {
         userRepository.save(newUser);
         return true;
     }
+    public UserStatusDTO getUserStatus(Jwt token) {
+        String auth0Id = token.getClaim("sub");
+        User user = userRepository.findByAuth0Id(auth0Id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        BookingDTO bookingDTO = bookingRepository
+                .findFirstByUserIdAndIsActiveTrue(user.getId())
+                .map(b -> modelMapper.map(b, BookingDTO.class))
+                .orElse(null);
+
+        TripDTO tripDTO = tripRepository
+                .findTopByUserAndState(user, TripState.ONGOING)
+                .map(t -> modelMapper.map(t, TripDTO.class))
+                .orElse(null);
+
+        return UserStatusDTO.builder()
+                .booking(bookingDTO)
+                .trip(tripDTO)
+                .build();
+    }
+
 }
