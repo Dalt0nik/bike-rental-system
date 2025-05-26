@@ -52,16 +52,16 @@ public class TripService {
 
         Trip saved = tripRepository.save(trip);
 
-        // remove bike from station
-        bike.setCurStation(null);
-        bike.setState(IN_USE);
-
         // deactivate booking
         Booking booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
                 bike.getId(), now, now)
                 .orElse(null);
         if (booking != null)
-            bookingService.deactivateBooking(booking.getId());
+            bookingService.deactivateBookingByTrip(booking, trip);
+
+        // remove bike from station
+        bike.setCurStation(null);
+        bike.setState(IN_USE);
 
         return mapper.map(saved, TripDTO.class);
     }

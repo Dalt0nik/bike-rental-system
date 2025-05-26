@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.BikeState;
-import lt.psk.bikerental.entity.Booking;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.UserRepository;
@@ -86,4 +83,10 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
+    @Transactional
+    public void deactivateBookingByTrip(Booking booking, Trip trip) {
+        booking.setActive(false);
+        booking.setFinishTime(trip.getStartTime());
+        bookingRepository.save(booking);
+    }
 }
