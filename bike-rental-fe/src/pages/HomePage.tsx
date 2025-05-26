@@ -80,9 +80,27 @@ export default function HomePage() {
               <Popup>
                 <strong>{station.address}</strong>
                 <br />
-                Free Bikes: {station.freeBikes}
-                <br />
-                Capacity: {station.capacity}
+                {hasActiveTrip ? (
+                  <>
+                    <span className="text-blue-600 font-bold">Available for Return</span>
+                    <br />
+                    Free Capacity: {station.freeCapacity}
+                    <br />
+                    Capacity: {station.capacity}
+                    <br />
+                  </>
+                ) : hasActiveBooking && station.id === bookedStationId ? (
+                  <>
+                    <span className="text-orange-600 font-bold">Booked bike in this station</span>
+                  </>
+                ) : (
+                  <>
+                    Free Bikes: {station.freeBikes}
+                    <br />
+                    Capacity: {station.capacity}
+                    <br />
+                  </>
+                )}
               </Popup>
             </Marker>
           ))}

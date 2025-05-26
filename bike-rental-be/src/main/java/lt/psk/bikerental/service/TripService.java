@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
 
 import static lt.psk.bikerental.entity.BikeState.IN_USE;
 
@@ -58,10 +57,11 @@ public class TripService {
         bike.setState(IN_USE);
 
         // deactivate booking
-        Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
-                bike.getId(), now, now
-        );
-        booking.map(b -> { bookingService.deactivateBooking(b.getId()); return b; });
+        Booking booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+                bike.getId(), now, now)
+                .orElse(null);
+        if (booking != null)
+            bookingService.deactivateBooking(booking.getId());
 
         return mapper.map(saved, TripDTO.class);
     }
