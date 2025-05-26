@@ -19,6 +19,8 @@ public class BookingDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID bookedBikeId;
 
+    private UUID bikeStationId;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID userId;
 

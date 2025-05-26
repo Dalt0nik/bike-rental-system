@@ -9,10 +9,7 @@ import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
 import lt.psk.bikerental.DTO.User.UserStatusDTO;
 import lt.psk.bikerental.entity.*;
-import lt.psk.bikerental.repository.BikeRepository;
-import lt.psk.bikerental.repository.BookingRepository;
-import lt.psk.bikerental.repository.TripRepository;
-import lt.psk.bikerental.repository.UserRepository;
+import lt.psk.bikerental.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -40,6 +37,9 @@ public class UserService {
     final static String userInfoPath = "/userinfo";
 
     private final RestTemplate restTemplate;
+    private final BikeRepository bikeRepository;
+    private final BikeStationRepository bikeStationRepository;
+    private final BikeService bikeService;
 
     @Value("${okta.oauth2.issuer}")
     private String auth0Domain;
@@ -76,6 +76,13 @@ public class UserService {
                 .findFirstByUserIdAndIsActiveTrue(user.getId())
                 .map(b -> modelMapper.map(b, BookingDTO.class))
                 .orElse(null);
+
+        if(bookingDTO != null) {
+            BikeDTO rentedBike = bikeService.getBikeById(bookingDTO.getBookedBikeId());
+
+            log.info("rented bike: {}", rentedBike);
+            bookingDTO.setBikeStationId(rentedBike.getCurStationId());
+        }
 
         TripDTO tripDTO = tripRepository
                 .findTopByUserAndState(user, TripState.ONGOING)

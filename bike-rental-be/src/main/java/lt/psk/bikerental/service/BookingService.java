@@ -51,6 +51,8 @@ public class BookingService {
         booking.setBike(bike);
         booking.setUser(user);
 
+        // TODO: prideti bikeStationId i DTO (as sakyciau kad ant create nereikia nieko grazinti)
+
         return modelMapper.map(bookingRepository.save(booking), BookingDTO.class);
     }
 
