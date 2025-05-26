@@ -31,13 +31,16 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws Exception {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         User user = null;
-        if (authentication != null) {
-            String auth0id = ((Jwt)authentication.getPrincipal()).getClaim("sub");
+        try {
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            String auth0id = ((Jwt) authentication.getPrincipal()).getClaim("sub");
             user = userRepository.findByAuth0Id(auth0id).orElse(null);
-        } else {
+        } catch (Exception ex) {
+
+        }
+        if (user == null) {
             user = new User();
             user.setFullName("<anonymous>");
             user.setId(new UUID(0, 0));

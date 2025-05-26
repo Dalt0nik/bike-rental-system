@@ -5,15 +5,20 @@ import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.DTO.Trip.CreateTripDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.entity.Bike;
+import lt.psk.bikerental.entity.Booking;
 import lt.psk.bikerental.entity.Trip;
 import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.BikeRepository;
+import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.TripRepository;
 import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.Optional;
 
 import static lt.psk.bikerental.entity.BikeState.IN_USE;
 
@@ -24,11 +29,14 @@ public class TripService {
     private final TripRepository tripRepository;
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
+        Instant now = Instant.now();
+
         Bike bike = bikeRepository.findById(dto.getBikeId())
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
 
@@ -36,7 +44,7 @@ public class TripService {
         User user = userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        tripValidator.validateStartTrip(bike, user, dto.getBikeId());
+        tripValidator.validateStartTrip(bike, user, dto.getBikeId(), now);
 
         Trip trip = new Trip();
         trip.setBike(bike);
@@ -47,6 +55,12 @@ public class TripService {
         // remove bike from station
         bike.setCurStation(null);
         bike.setState(IN_USE);
+
+        // deactivate booking
+        Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+                bike.getId(), now, now
+        );
+        booking.map(b -> { b.setActive(false); return b; });
 
         return mapper.map(saved, TripDTO.class);
     }

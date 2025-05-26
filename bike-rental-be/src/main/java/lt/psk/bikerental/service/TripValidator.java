@@ -24,11 +24,11 @@ public class TripValidator {
     private final TripRepository tripRepository;
     private final BookingRepository bookingRepository;
 
-    public void validateStartTrip(Bike bike, User user, UUID requestedBikeId) {
+    public void validateStartTrip(Bike bike, User user, UUID requestedBikeId, Instant now) {
         checkUserHasNoOngoingTrip(user);
-        checkUserHasNoOtherOngoingBooking(user, requestedBikeId);
+        checkUserHasNoOtherOngoingBooking(user, requestedBikeId, now);
         checkBikeIsNotInUse(bike);
-        checkBikeIsNotBookedByAnotherUser(bike, user);
+        checkBikeIsNotBookedByAnotherUser(bike, user, now);
     }
 
     private void checkBikeIsNotInUse(Bike bike) {
@@ -37,9 +37,7 @@ public class TripValidator {
         }
     }
 
-    private void checkBikeIsNotBookedByAnotherUser(Bike bike, User currentUser) {
-        Instant now = Instant.now();
-
+    private void checkBikeIsNotBookedByAnotherUser(Bike bike, User currentUser, Instant now) {
         Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
                 bike.getId(), now, now
         );
@@ -49,9 +47,7 @@ public class TripValidator {
         }
     }
 
-    private void checkUserHasNoOtherOngoingBooking(User user, UUID requestedBikeId) {
-        Instant now = Instant.now();
-
+    private void checkUserHasNoOtherOngoingBooking(User user, UUID requestedBikeId, Instant now) {
         Optional<Booking> conflictingBooking = bookingRepository.findFirstByUserIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
                 user.getId(), now, now
         );
