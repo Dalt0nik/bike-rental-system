@@ -30,6 +30,7 @@ public class TripService {
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
 
@@ -60,7 +61,7 @@ public class TripService {
         Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
                 bike.getId(), now, now
         );
-        booking.map(b -> { b.setActive(false); return b; });
+        booking.map(b -> { bookingService.deactivateBooking(b.getId()); return b; });
 
         return mapper.map(saved, TripDTO.class);
     }
