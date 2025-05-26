@@ -45,7 +45,7 @@ public class TripService {
         User user = userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        tripValidator.validateStartTrip(bike, user, dto.getBikeId(), now);
+        tripValidator.validateStartTrip(bike, user, dto.getBikeId());
 
         Trip trip = new Trip();
         trip.setBike(bike);
