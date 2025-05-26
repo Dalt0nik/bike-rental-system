@@ -17,8 +17,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 import static lt.psk.bikerental.entity.BikeState.IN_USE;
 
 @Service
@@ -35,8 +33,6 @@ public class TripService {
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
-        Instant now = Instant.now();
-
         Bike bike = bikeRepository.findById(dto.getBikeId())
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
 
@@ -54,7 +50,7 @@ public class TripService {
 
         // deactivate booking
         Booking booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
-                bike.getId(), now, now)
+                bike.getId(), trip.getStartTime(), trip.getStartTime())
                 .orElse(null);
         if (booking != null)
             bookingService.deactivateBookingByTrip(booking, trip);
