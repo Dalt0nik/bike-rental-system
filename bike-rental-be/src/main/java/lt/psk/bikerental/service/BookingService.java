@@ -51,6 +51,8 @@ public class BookingService {
         booking.setBike(bike);
         booking.setUser(user);
 
+        // TODO: prideti bikeStationId i DTO
+
         return modelMapper.map(bookingRepository.save(booking), BookingDTO.class);
     }
 

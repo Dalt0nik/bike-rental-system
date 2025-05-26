@@ -1,11 +1,12 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import "leaflet/dist/leaflet.css"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import type { Map as LeafletMap } from "leaflet"
 import L from "leaflet"
 import { useQuery } from "@tanstack/react-query"
 import { getAllBikeStations } from '../api/bikeStationApi';
-import Header from "../components/Header"
+import { getUserStatus } from '../api/userApi';
+import Header from "../components/Header";
 import { useMapWebSocket, StationUpdated } from "../hooks/useMapWebSocket";
 
 // Fix Leaflet marker icons
@@ -20,14 +21,71 @@ const defaultIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 })
+
+// Orange icon for booked station
+const bookedIcon = L.icon({
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 19.4 12.5 41 12.5 41S25 19.4 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="#ff8c00"/>
+      <circle cx="12.5" cy="12.5" r="6" fill="white"/>
+    </svg>
+  `),
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+})
+
 L.Marker.prototype.options.icon = defaultIcon
+
+function BookingTimer({ finishTime, stationAddress }: { finishTime: string; stationAddress?: string }) {
+  const [timeLeft, setTimeLeft] = useState<string>("");
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const finish = new Date(finishTime).getTime();
+      const diff = finish - now;
+
+      if (diff <= 0) {
+        setTimeLeft("Expired");
+        return;
+      }
+
+      const minutes = Math.floor(diff / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [finishTime]);
+
+  return (
+    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
+      <div className="font-bold">Booking expires in:</div>
+      <div className="text-xl font-mono">{timeLeft}</div>
+      {stationAddress && (
+        <div className="text-sm mt-1">Station: {stationAddress}</div>
+      )}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const mapRef = useRef<LeafletMap | null>(null)
-  const { data: stations = [], isLoading, isError } = useQuery({
+  const { data: stations = [], isLoading: isBikesLoading, isError: isBikesError } = useQuery({
     queryKey: ['allBikeStations'],
     queryFn: getAllBikeStations
   })
+
+  const { data: userStatus, isLoading: isStatusLoading, isError: isStatusError } = useQuery({
+    queryKey: ['userStatus'],
+    queryFn: getUserStatus
+  });
 
   const { init, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
     console.log("Station updated:", update);
@@ -41,24 +99,51 @@ export default function HomePage() {
     };
   }, []);
 
-
-  if (isLoading)
+  if (isBikesLoading || isStatusLoading)
     return (
       <div className="flex items-center justify-center h-screen">
         Loading map…
       </div>
     )
-  if (isError)
+  if (isBikesError)
     return (
       <div className="flex items-center justify-center h-screen">
         Error loading stations.
       </div>
     )
+  if (isStatusError)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Error loading user status.
+      </div>
+    )
+
+  const hasActiveBooking = userStatus?.booking?.active;
+  const bookedStationId = userStatus?.booking?.bikeStationId;
+  
+  const isBookingNotExpired = userStatus?.booking?.finishTime 
+    ? new Date(userStatus.booking.finishTime).getTime() > new Date().getTime()
+    : false;
+
+  const stationsToRender = hasActiveBooking && bookedStationId
+    ? stations.filter(station => station.id === bookedStationId)
+    : stations;
+
+  const bookedStation = hasActiveBooking && bookedStationId
+    ? stations.find(station => station.id === bookedStationId)
+    : null;
 
   return (
-    
     <div className="fixed inset-0 flex flex-col">
       <Header />
+
+      {/* Booking timer */}
+      {hasActiveBooking && userStatus?.booking?.finishTime && isBookingNotExpired && (
+        <BookingTimer 
+          finishTime={userStatus.booking.finishTime} 
+          stationAddress={bookedStation?.address}
+        />
+      )}
 
       <div className="relative flex-1 w-full">
         <MapContainer
@@ -72,16 +157,28 @@ export default function HomePage() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {stations.map((station) => (
+          {stationsToRender.map((station) => (
             <Marker
               key={station.id}
               position={[station.latitude, station.longitude]}
+              icon={hasActiveBooking && station.id === bookedStationId ? bookedIcon : defaultIcon}
             >
               <Popup>
                 <strong>{station.address}</strong>
                 <br />
-                Free Bikes: {station.freeBikes}
-                <br />
+                {hasActiveBooking && station.id === bookedStationId ? (
+                  <>
+                    <span className="text-orange-600 font-bold">🚴 Your Booked Station</span>
+                    <br />
+                    Booking ID: {userStatus?.booking?.id}
+                    <br />
+                  </>
+                ) : (
+                  <>
+                    Free Bikes: {station.freeBikes}
+                    <br />
+                  </>
+                )}
                 Capacity: {station.capacity}
               </Popup>
             </Marker>
