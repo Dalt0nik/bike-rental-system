@@ -161,6 +161,19 @@ export default function HomePage() {
     ? new Date(userStatus.booking.finishTime).getTime() > new Date().getTime()
     : false;
 
+  const hasConflict = hasActiveBooking && hasActiveTrip;
+
+  if (hasConflict) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="text-red-500 text-xl font-bold mb-2">Server Error</div>
+          <div>Cannot have both active booking and trip simultaneously</div>
+        </div>
+      </div>
+    );
+  }
+
   // Determine which stations to render based on user state
   let stationsToRender = stations;
   let useOrangeIcon = false;
@@ -226,10 +239,7 @@ export default function HomePage() {
                   </>
                 ) : hasActiveBooking && station.id === bookedStationId ? (
                   <>
-                    <span className="text-orange-600 font-bold">🚴 Your Booked Station</span>
-                    <br />
-                    Booking ID: {userStatus?.booking?.id}
-                    <br />
+                    <span className="text-orange-600 font-bold">Booked bike in this station</span>
                   </>
                 ) : (
                   <>
