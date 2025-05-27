@@ -153,9 +153,9 @@ export default function HomePage() {
       </div>
     )
 
-  const hasActiveBooking = userStatus?.booking?.active;
+  const hasActiveBooking = userStatus?.booking !== undefined;
   const bookedStationId = userStatus?.booking?.bikeStationId;
-  const hasActiveTrip = userStatus?.trip && !userStatus.trip.finishTime;
+  const hasActiveTrip = userStatus?.trip;
   
   const isBookingNotExpired = userStatus?.booking?.finishTime 
     ? new Date(userStatus.booking.finishTime).getTime() > new Date().getTime()

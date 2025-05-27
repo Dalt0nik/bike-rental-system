@@ -1,6 +1,5 @@
 package lt.psk.bikerental.DTO.Trip;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.Instant;
@@ -11,7 +10,5 @@ public class TripDTO {
     private UUID id;
     private UUID bikeId;
     private UUID userId;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID bookingId;
     private Instant startTime;
 }
