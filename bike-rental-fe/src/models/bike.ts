@@ -1,12 +1,12 @@
 export enum BikeState {
-    FREE,
-    BOOKED,
-    IN_USE,
-    NEEDS_REPAIR
+    FREE = "FREE",
+    BOOKED = "BOOKED", 
+    IN_USE = "IN_USE",
+    NEEDS_REPAIR = "NEEDS_REPAIR"
 }
 
 export interface BikeResponse {
     id: string;
     curStationId: string;
-    bikeState: BikeState;
+    state: BikeState;
 }

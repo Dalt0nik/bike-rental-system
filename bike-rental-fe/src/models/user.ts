@@ -1,20 +1,5 @@
-export interface BookingResponse {
-    id: string;
-    bookedBikeId?: string;
-    bikeStationId?: string;
-    userId?: string;
-    startTime: string; // ISO string
-    finishTime: string; // ISO string
-    active: boolean;
-}
-
-export interface TripResponse {
-    id: string;
-    bikeId: string;
-    userId: string;
-    startTime: string; // ISO string
-    finishTime?: string; // ISO string
-}
+import { BookingResponse } from './booking';
+import { TripResponse } from './trip';
 
 export interface UserStatusResponse {
     booking?: BookingResponse;
