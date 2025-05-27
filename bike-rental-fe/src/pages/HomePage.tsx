@@ -263,26 +263,20 @@ export default function HomePage() {
             >
               <Popup>
                 <strong>{station.address}</strong>
-                <br />
                 {hasActiveTrip ? (
                   <>
-                    <span className="text-blue-600 font-bold">Available for Return</span>
-                    <br />
-                    Free Capacity: {station.freeCapacity}
-                    <br />
-                    Capacity: {station.capacity}
-                    <br />
+                    <br /><span className="text-blue-600 font-bold">Available for Return</span>
+                    <br />Free Capacity: {station.freeCapacity}
                   </>
                 ) : hasActiveBooking && station.id === bookedStationId ? (
                   <>
-                    <span className="text-orange-600 font-bold">Booked bike in this station</span>
-                    <br />
+                    <br /><span className="text-orange-600 font-bold">Booked bike in this station</span>
                   </>
                 ) : (
                   <>
-                    Free Bikes: {station.freeBikes}
-                    <br />
-                    {station.freeBikes > 0 && (
+                    <br />Free Bikes: {station.freeBikes}
+                    {station.freeBikes > 0 && (<>
+                      <br />
                       <button
                         onClick={() => handleBookBike(station.id)}
                         disabled={createBookingMutation.isPending}
@@ -290,11 +284,10 @@ export default function HomePage() {
                       >
                         {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
                       </button>
-                    )}
-                    <br />
+                    </>)}
                   </>
                 )}
-                Capacity: {station.capacity}
+                <br />Capacity: {station.capacity}
               </Popup>
             </Marker>
           ))}

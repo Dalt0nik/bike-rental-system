@@ -55,8 +55,7 @@ public class ModelMapperConfig {
         // Trip, TripDTO mapping
         mapper.createTypeMap(Trip.class, TripDTO.class)
                 .addMapping(Trip::getBike, TripDTO::setBikeId)
-                .addMapping(Trip::getUser, TripDTO::setUserId)
-                .addMapping(Trip::getBooking, TripDTO::setBookingId);
+                .addMapping(Trip::getUser, TripDTO::setUserId);
 
         // Booking-DTO specific converters, mappings
         mapper.createTypeMap(Booking.class, BookingDTO.class)
