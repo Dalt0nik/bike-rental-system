@@ -26,16 +26,9 @@ public class Booking {
     @JoinColumn(name = "booked_bike_id", referencedColumnName = "id")
     private Bike bike;
 
-    @OneToOne(optional = true)
-    @JoinColumn(name = "trip_id")
-    private Trip trip;
-
     @Column(nullable = false)
     private Instant startTime = Instant.now();
 
     @Column(nullable = false)
     private Instant finishTime = startTime.plus(20, ChronoUnit.MINUTES);
-
-    @Column(nullable = false)
-    private boolean isActive = true;
 }

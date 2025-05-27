@@ -19,6 +19,7 @@ public class BookingDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID bookedBikeId;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID bikeStationId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,7 +28,4 @@ public class BookingDTO {
     private Instant startTime;
 
     private Instant finishTime;
-
-    private boolean isActive;
-
 }

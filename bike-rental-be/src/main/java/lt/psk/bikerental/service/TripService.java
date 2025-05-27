@@ -49,11 +49,13 @@ public class TripService {
         Trip saved = tripRepository.save(trip);
 
         // deactivate booking
-        Booking booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+        Booking booking = bookingRepository.findFirstByBikeIdAndStartTimeBeforeAndFinishTimeAfter(
                 bike.getId(), trip.getStartTime(), trip.getStartTime())
                 .orElse(null);
-        if (booking != null)
+        if (booking != null) {
             bookingService.deactivateBookingByTrip(booking, trip);
+            trip.setBooking(booking);
+        }
 
         // remove bike from station
         bike.setCurStation(null);

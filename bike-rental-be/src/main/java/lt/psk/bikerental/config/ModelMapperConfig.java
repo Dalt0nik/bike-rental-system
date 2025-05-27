@@ -35,6 +35,8 @@ public class ModelMapperConfig {
 
         // Entity-to-UUID converters
         mapper.addConverter(v -> v.getSource() != null ? v.getSource().getId() : null, Bike.class, UUID.class);
+        mapper.addConverter(v -> v.getSource() != null ? v.getSource().getId() : null, Booking.class, UUID.class);
+        mapper.addConverter(v -> v.getSource() != null ? v.getSource().getId() : null, Trip.class, UUID.class);
         mapper.addConverter(v -> v.getSource() != null ? v.getSource().getId() : null, User.class, UUID.class);
 
         // UUID-to-Entity converters
@@ -45,25 +47,24 @@ public class ModelMapperConfig {
 
         // Bike-DTO specific converters, mappings
         mapper.createTypeMap(Bike.class, BikeDTO.class)
-                .addMappings(m -> m
-                        .map(Bike::getCurStation, BikeDTO::setCurStationId));
+                .addMapping(Bike::getCurStation, BikeDTO::setCurStationId);
 
         mapper.createTypeMap(CreateBikeDTO.class, Bike.class)
-                .addMappings(m -> m
-                        .map(CreateBikeDTO::getCurrentBikeStationId, Bike::setCurStation));
+                .addMapping(CreateBikeDTO::getCurrentBikeStationId, Bike::setCurStation);
 
         // Trip, TripDTO mapping
         mapper.createTypeMap(Trip.class, TripDTO.class)
-                .addMappings(m -> m.map(src -> src.getBike().getId(), TripDTO::setBikeId))
-                .addMappings(m -> m.map(src -> src.getUser().getId(), TripDTO::setUserId));
+                .addMapping(Trip::getBike, TripDTO::setBikeId)
+                .addMapping(Trip::getUser, TripDTO::setUserId)
+                .addMapping(Trip::getBooking, TripDTO::setBookingId);
+
         // Booking-DTO specific converters, mappings
         mapper.createTypeMap(Booking.class, BookingDTO.class)
                 .addMapping(Booking::getBike, BookingDTO::setBookedBikeId)
                 .addMapping(Booking::getUser, BookingDTO::setUserId);
 
         mapper.createTypeMap(CreateBookingDTO.class, Booking.class)
-                .addMappings(m -> m
-                        .map(CreateBookingDTO::getBookedBikeId, Booking::setBike));
+                .addMapping(CreateBookingDTO::getBookedBikeId, Booking::setBike);
 
         return mapper;
     }

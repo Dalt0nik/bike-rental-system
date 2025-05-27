@@ -64,19 +64,14 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
 
-        if (!booking.isActive()) {
-            throw new IllegalStateException("Booking is already inactive");
-        }
-
         Instant now = Instant.now();
         if (now.isAfter(booking.getFinishTime())) {
-            throw new IllegalStateException("Booking is already inactive (time's up)"); // by this time active should be false
+            throw new IllegalStateException("Booking is already inactive (time's up)");
         }
-        else if (now.isBefore(booking.getFinishTime())) {
+        if (now.isBefore(booking.getFinishTime())) {
             booking.setFinishTime(now);
         }
 
-        booking.setActive(false);
         booking.getBike().setState(BikeState.FREE);
 
         bikeRepository.save(booking.getBike());
@@ -85,7 +80,6 @@ public class BookingService {
 
     @Transactional
     public void deactivateBookingByTrip(Booking booking, Trip trip) {
-        booking.setActive(false);
         booking.setFinishTime(trip.getStartTime());
         bookingRepository.save(booking);
     }

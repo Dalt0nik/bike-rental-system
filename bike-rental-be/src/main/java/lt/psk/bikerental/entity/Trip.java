@@ -25,7 +25,7 @@ public class Trip {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(optional = true, mappedBy = "trip")
+    @OneToOne(optional = true)
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
