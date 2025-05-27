@@ -4,8 +4,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import type { Map as LeafletMap } from "leaflet"
 import L from "leaflet"
 import { useQuery } from "@tanstack/react-query"
-import { getAllBikeStations } from '../api/bikeStationApi';
+import { getAllBikeStations, getBikeStation } from '../api/bikeStationApi';
 import { getUserStatus } from '../api/userApi';
+import { useCreateBooking } from '../hooks/useCreateBooking';
+import { BikeState } from '../models/bike';
 import Header from "../components/Header";
 import { useMapWebSocket, StationUpdated } from "../hooks/useMapWebSocket";
 
@@ -122,6 +124,8 @@ export default function HomePage() {
     queryFn: getUserStatus
   });
 
+  const createBookingMutation = useCreateBooking();
+
   const { init, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
     console.log("Station updated:", update);
   });
@@ -161,6 +165,7 @@ export default function HomePage() {
     ? new Date(userStatus.booking.finishTime).getTime() > new Date().getTime()
     : false;
 
+  // Check for conflict - both booking and trip active at the same time
   const hasConflict = hasActiveBooking && hasActiveTrip;
 
   if (hasConflict) {
@@ -191,6 +196,35 @@ export default function HomePage() {
   const bookedStation = hasActiveBooking && bookedStationId
     ? stations.find(station => station.id === bookedStationId)
     : null;
+
+  const handleBookBike = async (stationId: string) => {
+    const station = stations.find(s => s.id === stationId);
+    if (!station || station.freeBikes === 0) {
+      console.error("No available bikes at this station");
+      return;
+    }
+
+    try {
+      // Fetch the detailed station data to get actual bike IDs
+      const stationDetails = await getBikeStation(stationId);
+      
+      // Find the first available bike (FREE state)
+      const availableBike = stationDetails.bikes.find(bike => bike.state === BikeState.FREE);
+      
+      if (!availableBike) {
+        console.error("No available bikes found at this station");
+        return;
+      }
+
+      // Book the actual bike ID
+      createBookingMutation.mutate({
+        bookedBikeId: availableBike.id,
+        bikeStationId: stationId
+      });
+    } catch (error) {
+      console.error("Failed to fetch station details:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex flex-col">
@@ -242,15 +276,25 @@ export default function HomePage() {
                 ) : hasActiveBooking && station.id === bookedStationId ? (
                   <>
                     <span className="text-orange-600 font-bold">Booked bike in this station</span>
+                    <br />
                   </>
                 ) : (
                   <>
                     Free Bikes: {station.freeBikes}
                     <br />
-                    Capacity: {station.capacity}
+                    {station.freeBikes > 0 && (
+                      <button
+                        onClick={() => handleBookBike(station.id)}
+                        disabled={createBookingMutation.isPending}
+                        className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
+                      >
+                        {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
+                      </button>
+                    )}
                     <br />
                   </>
                 )}
+                Capacity: {station.capacity}
               </Popup>
             </Marker>
           ))}
