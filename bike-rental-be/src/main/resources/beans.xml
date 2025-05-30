@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <!-- By default, beans are imported from the target package with their IDs being camelCaseOfClassName. -->
+    <context:component-scan base-package="lt.psk.bikerental"/>
+
+    <!-- Bean IDs are used when resolving which bean to use for a constructor parameter or @Autowired object member,
+        the bean ID being matched against the name of either. -->
+
+    <!-- Beans can be overridden to use another bean from possibly another external package,
+        as long as the new bean extends the original. -->
+    <!--<bean id="tripValidator" class="lt.psk.bikerental.service.PaymentTripValidator"/>-->
+
+    <!-- Using a bean interface, instead of extending a bean that is to be changed,
+        another bean is only required to implement the bean interface that is used. -->
+    <!--<bean id="iTripValidator" class="lt.psk.bikerental.service.PaymentTripValidator"/>-->
+
+    <!-- Beans are overridden by ID, with the one being defined last taking precedence. -->
+</beans>
