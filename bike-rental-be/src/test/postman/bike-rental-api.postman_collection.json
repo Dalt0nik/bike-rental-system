@@ -119,8 +119,11 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"exec": [],
-										"type": "text/javascript"
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -129,7 +132,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"capacity\": 10,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
+									"raw": "{\n  \"capacity\": 3,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -213,7 +216,7 @@
 									"script": {
 										"exec": [
 											"let bike = pm.response.json();",
-											"pm.environment.set(\"bikeId\", bike.id);",
+											"pm.collectionVariables.set(\"bikeId\", bike.id);",
 											"console.log(\"Saved bikeId:\", bike.id);"
 										],
 										"type": "text/javascript",
@@ -265,14 +268,13 @@
 									"script": {
 										"exec": [
 											"let bikes = pm.response.json();",
-											"console.log(\"Created\", bikes.length, \"bikes.\");",
-											"if (bikes.length > 0) {",
-											"    pm.environment.set(\"bulkBikeId\", bikes[0].id);",
-											"    console.log(\"Saved first bike id as bulkBikeId:\", bikes[0].id);",
-											"}",
 											"pm.test(\"Bulk bike creation succeeded\", function () {",
 											"    pm.expect(bikes.length).to.be.above(0);",
-											"});"
+											"});",
+											"if (bikes.length > 0) {",
+											"    pm.collectionVariables.set(\"bikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bikeId:\", bikes[0].id);",
+											"}"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -412,7 +414,7 @@
 									"script": {
 										"exec": [
 											"let booking = pm.response.json();",
-											"pm.environment.set(\"bookingId\", booking.id);",
+											"pm.collectionVariables.set(\"bookingId\", booking.id);",
 											"console.log(\"Saved bookingId:\", booking.id);"
 										],
 										"type": "text/javascript",
@@ -422,8 +424,11 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"exec": [],
-										"type": "text/javascript"
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -510,7 +515,7 @@
 									"script": {
 										"exec": [
 											"let trip = pm.response.json();",
-											"pm.environment.set(\"tripId\", trip.id);",
+											"pm.collectionVariables.set(\"tripId\", trip.id);",
 											"console.log(\"Saved tripId:\", trip.id);"
 										],
 										"type": "text/javascript",
@@ -520,8 +525,11 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"exec": [],
-										"type": "text/javascript"
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
