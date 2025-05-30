@@ -32,9 +32,6 @@ public class Booking {
     @Column(nullable = false)
     private Instant finishTime = startTime.plus(20, ChronoUnit.MINUTES);
 
-    @Column(nullable = false)
-    private boolean isActive = true;
-
     @Version
     @Column(nullable = false)
     private Long version;

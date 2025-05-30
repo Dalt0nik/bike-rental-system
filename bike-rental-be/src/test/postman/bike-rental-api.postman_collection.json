@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "c4ec14df-2caa-4444-836e-c4d442ee8a29",
+		"_postman_id": "3f164420-0af7-4b8e-8f0d-157f00410dd8",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29989928"
+		"_exporter_id": "43388435"
 	},
 	"item": [
 		{
@@ -119,8 +119,11 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"exec": [],
-										"type": "text/javascript"
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -129,7 +132,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"capacity\": 10,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
+									"raw": "{\n  \"capacity\": 3,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -213,7 +216,7 @@
 									"script": {
 										"exec": [
 											"let bike = pm.response.json();",
-											"pm.environment.set(\"bikeId\", bike.id);",
+											"pm.collectionVariables.set(\"bikeId\", bike.id);",
 											"console.log(\"Saved bikeId:\", bike.id);"
 										],
 										"type": "text/javascript",
@@ -265,14 +268,13 @@
 									"script": {
 										"exec": [
 											"let bikes = pm.response.json();",
-											"console.log(\"Created\", bikes.length, \"bikes.\");",
-											"if (bikes.length > 0) {",
-											"    pm.environment.set(\"bulkBikeId\", bikes[0].id);",
-											"    console.log(\"Saved first bike id as bulkBikeId:\", bikes[0].id);",
-											"}",
 											"pm.test(\"Bulk bike creation succeeded\", function () {",
 											"    pm.expect(bikes.length).to.be.above(0);",
-											"});"
+											"});",
+											"if (bikes.length > 0) {",
+											"    pm.collectionVariables.set(\"bikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bikeId:\", bikes[0].id);",
+											"}"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -406,17 +408,34 @@
 					"item": [
 						{
 							"name": "create booking",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let booking = pm.response.json();",
+											"pm.collectionVariables.set(\"bookingId\", booking.id);",
+											"console.log(\"Saved bookingId:\", booking.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
 								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
 								"method": "POST",
 								"header": [],
 								"body": {
@@ -445,16 +464,6 @@
 						{
 							"name": "deactivate booking",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "PATCH",
 								"header": [],
 								"url": {
@@ -476,27 +485,132 @@
 						{
 							"name": "get booking",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/bookings{{bookingId}}",
+									"raw": "http://localhost:8080/bookings/{{bookingId}}",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "8080",
 									"path": [
-										"bookings{{bookingId}}"
+										"bookings",
+										"{{bookingId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "trip",
+					"item": [
+						{
+							"name": "start trip",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let trip = pm.response.json();",
+											"pm.collectionVariables.set(\"tripId\", trip.id);",
+											"console.log(\"Saved tripId:\", trip.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"bikeId\": \"{{bikeId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/trips",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"trips"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "get user status",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let userStatus = pm.response.json();",
+											"",
+											"let booking = userStatus.booking;",
+											"if (booking !== undefined) {",
+											"    pm.environment.set(\"bookingId\", booking.id);",
+											"    console.log(\"Saved bookingId:\", booking.id);",
+											"}",
+											"",
+											"let trip = userStatus.trip;",
+											"if (trip !== undefined) {",
+											"    let trip = pm.response.json();",
+											"    pm.environment.set(\"tripId\", trip.id);",
+											"    console.log(\"Saved tripId:\", trip.id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/status",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										"status"
 									]
 								}
 							},
@@ -507,6 +621,16 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{BEARER_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -541,14 +665,14 @@
 			"type": "default"
 		},
 		{
-			"key": "token",
+			"key": "bookingId",
 			"value": "00000000-0000-0000-0000-000000000000",
 			"type": "default"
 		},
 		{
-			"key": "bookingId",
+			"key": "tripId",
 			"value": "00000000-0000-0000-0000-000000000000",
-			"type": "default"
+			"type": "string"
 		}
 	]
 }

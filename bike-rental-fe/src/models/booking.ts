@@ -5,7 +5,6 @@ export interface BookingResponse {
     userId?: string;
     startTime: string; // ISO string
     finishTime: string; // ISO string
-    active: boolean;
 }
 
 export interface CreateBookingRequest {

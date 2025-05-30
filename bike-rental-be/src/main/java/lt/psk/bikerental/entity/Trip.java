@@ -25,6 +25,10 @@ public class Trip {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(optional = true)
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
     @Column(nullable = false)
     private Instant startTime = Instant.now();
 

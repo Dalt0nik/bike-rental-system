@@ -10,6 +10,7 @@ import lt.psk.bikerental.exception.InvalidBookingException;
 import lt.psk.bikerental.repository.BookingRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
@@ -31,7 +32,8 @@ public class BookingValidator {
     }
 
     private void checkUserHasNoActiveBookedBikes(User user) {
-        Optional<Booking> booking = bookingRepository.findFirstByUserIdAndIsActiveTrue(user.getId());
+        Instant now = Instant.now();
+        Optional<Booking> booking = bookingRepository.findFirstByUserIdAndStartTimeBeforeAndFinishTimeAfter(user.getId(), now, now);
         if (booking.isPresent()) {
             throw new InvalidBookingException("You have a booking for a different bike");
         }

@@ -25,10 +25,12 @@ public class TripValidator {
     private final BookingRepository bookingRepository;
 
     public void validateStartTrip(Bike bike, User user, UUID requestedBikeId) {
+        Instant now = Instant.now();
+
         checkUserHasNoOngoingTrip(user);
-        checkUserHasNoOtherOngoingBooking(user, requestedBikeId);
+        checkUserHasNoOtherOngoingBooking(user, requestedBikeId, now);
         checkBikeIsNotInUse(bike);
-        checkBikeIsNotBookedByAnotherUser(bike, user);
+        checkBikeIsNotBookedByAnotherUser(bike, user, now);
     }
 
     private void checkBikeIsNotInUse(Bike bike) {
@@ -37,22 +39,18 @@ public class TripValidator {
         }
     }
 
-    private void checkBikeIsNotBookedByAnotherUser(Bike bike, User currentUser) {
-        Instant now = Instant.now();
+    private void checkBikeIsNotBookedByAnotherUser(Bike bike, User currentUser, Instant now) {
+        Booking booking = bookingRepository
+                .findFirstByBikeIdAndStartTimeBeforeAndFinishTimeAfter(bike.getId(), now, now)
+                .orElse(null);
 
-        Optional<Booking> booking = bookingRepository.findFirstByBikeIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
-                bike.getId(), now, now
-        );
-
-        if (booking.isPresent() && !booking.get().getUser().getId().equals(currentUser.getId())) {
+        if (booking != null && !booking.getUser().getId().equals(currentUser.getId())) {
             throw new BikeNotAvailableException("This bike is currently booked by another user");
         }
     }
 
-    private void checkUserHasNoOtherOngoingBooking(User user, UUID requestedBikeId) {
-        Instant now = Instant.now();
-
-        Optional<Booking> conflictingBooking = bookingRepository.findFirstByUserIdAndIsActiveTrueAndStartTimeBeforeAndFinishTimeAfter(
+    private void checkUserHasNoOtherOngoingBooking(User user, UUID requestedBikeId, Instant now) {
+        Optional<Booking> conflictingBooking = bookingRepository.findFirstByUserIdAndStartTimeBeforeAndFinishTimeAfter(
                 user.getId(), now, now
         );
 

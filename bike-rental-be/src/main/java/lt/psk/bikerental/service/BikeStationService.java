@@ -51,13 +51,9 @@ public class BikeStationService {
         BikeStation station = bikeStationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bike station not found"));
 
-        if (dto.getCapacity() != null) {
-            if (dto.getCapacity() < station.getBikes().size())
-                throw new RuntimeException("Bike station cannot have less capacity than current bikes");
-            station.setCapacity(dto.getCapacity());
-        }
-
-        station.setAddress(dto.getAddress());
+        modelMapper.map(dto, station);
+        if (station.getCapacity() < station.getBikes().size())
+            throw new RuntimeException("Bike station cannot have less capacity than current bikes");
 
         BikeStation saved = bikeStationRepository.save(station);
 

@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.DTO.Trip.CreateTripDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.entity.Bike;
+import lt.psk.bikerental.entity.Booking;
 import lt.psk.bikerental.entity.Trip;
 import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.BikeRepository;
+import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.TripRepository;
 import lt.psk.bikerental.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,8 @@ public class TripService {
     private final TripRepository tripRepository;
     private final BikeRepository bikeRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
 
@@ -43,6 +47,15 @@ public class TripService {
         trip.setUser(user);
 
         Trip saved = tripRepository.save(trip);
+
+        // deactivate booking
+        Booking booking = bookingRepository.findFirstByBikeIdAndStartTimeBeforeAndFinishTimeAfter(
+                bike.getId(), trip.getStartTime(), trip.getStartTime())
+                .orElse(null);
+        if (booking != null) {
+            bookingService.deactivateBookingByTrip(booking, trip);
+            trip.setBooking(booking);
+        }
 
         // remove bike from station
         bike.setCurStation(null);

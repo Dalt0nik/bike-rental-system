@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.BikeState;
-import lt.psk.bikerental.entity.Booking;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.UserRepository;
@@ -67,23 +64,23 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
 
-        if (!booking.isActive()) {
-            throw new IllegalStateException("Booking is already inactive");
-        }
-
         Instant now = Instant.now();
         if (now.isAfter(booking.getFinishTime())) {
-            throw new IllegalStateException("Booking is already inactive (time's up)"); // by this time active should be false
+            throw new IllegalStateException("Booking is already inactive (time's up)");
         }
-        else if (now.isBefore(booking.getFinishTime())) {
+        if (now.isBefore(booking.getFinishTime())) {
             booking.setFinishTime(now);
         }
 
-        booking.setActive(false);
         booking.getBike().setState(BikeState.FREE);
 
         bikeRepository.save(booking.getBike());
         bookingRepository.save(booking);
     }
 
+    @Transactional
+    public void deactivateBookingByTrip(Booking booking, Trip trip) {
+        booking.setFinishTime(trip.getStartTime());
+        bookingRepository.save(booking);
+    }
 }

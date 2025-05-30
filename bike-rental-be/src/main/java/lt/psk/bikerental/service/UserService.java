@@ -8,7 +8,8 @@ import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
 import lt.psk.bikerental.DTO.User.UserStatusDTO;
-import lt.psk.bikerental.entity.*;
+import lt.psk.bikerental.entity.TripState;
+import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Optional;
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -68,12 +69,14 @@ public class UserService {
         return true;
     }
     public UserStatusDTO getUserStatus(Jwt token) {
+        Instant now = Instant.now();
+
         String auth0Id = token.getClaim("sub");
         User user = userRepository.findByAuth0Id(auth0Id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         BookingDTO bookingDTO = bookingRepository
-                .findFirstByUserIdAndIsActiveTrue(user.getId())
+                .findFirstByUserIdAndStartTimeBeforeAndFinishTimeAfter(user.getId(), now, now)
                 .map(b -> modelMapper.map(b, BookingDTO.class))
                 .orElse(null);
 
