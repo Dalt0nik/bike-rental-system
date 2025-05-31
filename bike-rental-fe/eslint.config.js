@@ -34,6 +34,7 @@ export default tseslint.config(
       "@stylistic/no-trailing-spaces": ["error"],
       "@stylistic/semi": ["error"],
       "@stylistic/indent": ["error", 2, { "ignoredNodes": ["JSXAttribute"] }],
+      "@stylistic/indent-binary-ops": ["error", 2],
       "@stylistic/keyword-spacing": ["error"],
       "@stylistic/brace-style": ["error"],
       "eol-last": ["error"],
