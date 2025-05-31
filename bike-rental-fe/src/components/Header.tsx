@@ -22,9 +22,7 @@ export default function Header() {
               Welcome, {user?.email}
             </span>
             <button
-              onClick={() =>
-                logout({ logoutParams: { returnTo: window.location.origin } })
-              }
+              onClick={() => void logout({ logoutParams: { returnTo: window.location.origin } })}
               className="bg-white text-blue-500 py-1.5 px-6 rounded font-bold text-sm hover:bg-blue-50 transition-colors"
             >
               Log Out
@@ -63,7 +61,7 @@ export default function Header() {
           </div>
           <button
             onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
+              void logout({ logoutParams: { returnTo: window.location.origin } })
             }
             className="bg-white text-blue-500 py-2 px-6 rounded font-bold w-full hover:bg-blue-50 transition-colors"
           >

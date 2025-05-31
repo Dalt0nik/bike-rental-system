@@ -47,9 +47,9 @@ export function useCreateBooking() {
       console.error("Booking failed:", err);
     },
 
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["userState"] });
-      queryClient.invalidateQueries({ queryKey: ["allBikeStations"] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["userState"] });
+      await queryClient.invalidateQueries({ queryKey: ["allBikeStations"] });
     },
   });
 }

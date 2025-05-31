@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { PropsWithChildren, useEffect } from "react";
 import { api, setTokenGetter } from "../api/Api";
 
-const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+const domain = import.meta.env.VITE_AUTH0_DOMAIN as string;
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID as string;
+const audience = import.meta.env.VITE_AUTH0_AUDIENCE as string;
 
 interface Auth0AppState {
   returnTo?: string;
@@ -27,7 +27,7 @@ function Auth0TokenProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    (async () => {
+    void (async () => {
       try {
         await api.post("/users/register");
       } catch (err) {
@@ -44,7 +44,7 @@ export function Auth0ProviderWithHistory({ children }: PropsWithChildren) {
   const navigate = useNavigate();
 
   const onRedirectCallback = (appState: Auth0AppState | undefined) => {
-    navigate(appState?.returnTo || window.location.pathname);
+    void navigate(appState?.returnTo || window.location.pathname);
   };
 
   return (

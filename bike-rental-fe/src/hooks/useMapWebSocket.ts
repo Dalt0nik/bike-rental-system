@@ -6,6 +6,8 @@ export interface StationUpdated {
   timestamp: string;
 }
 
+export type WebSocketEvent = StationUpdated;
+
 export function useMapWebSocket(
   onStationUpdated: (update: StationUpdated) => void
 ) {
@@ -21,7 +23,8 @@ export function useMapWebSocket(
       () => {
         // onConnect
         console.log("Attempt to connect to map WebSocket");
-        subscribeToTopic<StationUpdated>("/topic/map", (payload) => {
+        subscribeToTopic<WebSocketEvent>("/topic/map", (payload) => {
+          // eslint-disable-next-line "@typescript-eslint/no-unnecessary-condition"
           if (payload.event === "station_updated") {
             onStationUpdated(payload);
           }

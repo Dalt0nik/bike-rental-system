@@ -26,17 +26,19 @@ export default function HomePage() {
     queryFn: getUserState
   });
 
-  const { init, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
+  const { init, isConnected, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
     console.log("Station updated:", update);
   });
 
   useEffect(() => {
-    init();
+    if (!isConnected)
+      init();
 
     return () => {
-      deactivateConnection();
+      if (isConnected)
+        deactivateConnection();
     };
-  }, [init, deactivateConnection]);
+  }, [init, isConnected, deactivateConnection]);
 
   if (isBikesLoading || isStatusLoading)
     return (
