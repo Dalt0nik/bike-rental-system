@@ -8,37 +8,37 @@ export interface UserStateResponse {
 }
 
 export enum UserStatus {
-  Free,
-  HasBooking,
-  OnTrip,
-  Invalid,
+  FREE,
+  HAS_BOOKING,
+  ON_TRIP,
+  INVALID,
 }
 interface UserStateFree {
-  status: UserStatus.Free;
+  status: UserStatus.FREE;
 };
 interface UserStateHasBooking {
-  status: UserStatus.HasBooking;
+  status: UserStatus.HAS_BOOKING;
   booking: BookingResponse;
 };
 interface UserStateHasTrip {
-  status: UserStatus.OnTrip;
+  status: UserStatus.ON_TRIP;
   trip: TripResponse;
 };
 interface UserStateInvalid {
-  status: UserStatus.Invalid;
+  status: UserStatus.INVALID;
   [key: string]: unknown;
 };
 export type UserState = UserStateFree | UserStateHasBooking | UserStateHasTrip | UserStateInvalid;
 
 export function deriveUserState(userStateResponse: UserStateResponse): UserState {
   if (userStateResponse.booking !== undefined && userStateResponse.trip !== undefined)
-    return { status: UserStatus.Invalid };
+    return { status: UserStatus.INVALID, ...userStateResponse };
 
   if (userStateResponse.booking !== undefined)
-    return { status: UserStatus.HasBooking, booking: userStateResponse.booking };
+    return { status: UserStatus.HAS_BOOKING, booking: userStateResponse.booking };
 
   if (userStateResponse.trip !== undefined)
-    return { status: UserStatus.OnTrip, trip: userStateResponse.trip };
+    return { status: UserStatus.ON_TRIP, trip: userStateResponse.trip };
 
-  return { status: UserStatus.Free };
+  return { status: UserStatus.FREE };
 }

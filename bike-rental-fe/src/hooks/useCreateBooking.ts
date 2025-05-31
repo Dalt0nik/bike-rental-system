@@ -28,7 +28,6 @@ export function useCreateBooking() {
         id: "temp-" + Date.now(), // Temporary ID
         bookedBikeId: newBookingRequest.bookedBikeId,
         bikeStationId: newBookingRequest.bikeStationId, // Now we have this!
-        userId: undefined, // Server will fill this
         startTime: new Date().toISOString(),
         finishTime: new Date(Date.now() + 20 * 60 * 1000).toISOString(), // 20 minutes from now
       };
