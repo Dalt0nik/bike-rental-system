@@ -8,11 +8,15 @@ import stylistic from "@stylistic/eslint-plugin";
 export default tseslint.config(
   { ignores: ["dist"] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       "react-hooks": reactHooks,
@@ -45,6 +49,9 @@ export default tseslint.config(
       "@stylistic/jsx-indent-props": ["error", 2],
       "@stylistic/jsx-curly-spacing": [2, { "when": "never", "children": true }],
       "@stylistic/jsx-closing-bracket-location": ["error"],
+
+      "@typescript-eslint/prefer-promise-reject-errors": "off",
+      "@typescript-eslint/no-unnecessary-condition": ["error"],
     },
   },
 )

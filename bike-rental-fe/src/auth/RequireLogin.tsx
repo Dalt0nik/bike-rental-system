@@ -6,7 +6,7 @@ export default function RequireLogin({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      loginWithRedirect();
+      void loginWithRedirect();
     }
   }, [isLoading, isAuthenticated, loginWithRedirect]);
 

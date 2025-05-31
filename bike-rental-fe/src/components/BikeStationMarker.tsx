@@ -91,7 +91,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
               <>
                 <br />
                 <button
-                  onClick={() => handleBookBike(station)}
+                  onClick={() => void handleBookBike(station)}
                   disabled={createBookingMutation.isPending}
                   className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
                 >
