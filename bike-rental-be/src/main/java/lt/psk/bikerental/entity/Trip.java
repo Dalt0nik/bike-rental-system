@@ -34,8 +34,4 @@ public class Trip {
 
     @Column
     private Instant finishTime;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TripState state = TripState.ONGOING;
 }
