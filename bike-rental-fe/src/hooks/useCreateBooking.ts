@@ -22,7 +22,7 @@ export function useCreateBooking() {
       await queryClient.cancelQueries({ queryKey: ["userState"] });
 
       // Snapshot the previous value (for rollback if needed)
-      const previousUserStatus = queryClient.getQueryData<UserStateResponse>(["userState"]);
+      const previousUserState = queryClient.getQueryData<UserStateResponse>(["userState"]);
 
       const optimisticBooking: BookingResponse = {
         id: "temp-" + Date.now(), // Temporary ID
@@ -38,12 +38,12 @@ export function useCreateBooking() {
         booking: optimisticBooking,
       }));
 
-      return { previousUserStatus };
+      return { previousUserState };
     },
 
     onError: (err, _newBookingRequest, context) => {
-      if (context?.previousUserStatus) {
-        queryClient.setQueryData(["userState"], context.previousUserStatus);
+      if (context?.previousUserState) {
+        queryClient.setQueryData(["userState"], context.previousUserState);
       }
       console.error("Booking failed:", err);
     },

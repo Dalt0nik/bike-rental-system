@@ -4,7 +4,7 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
 import { useQuery } from "@tanstack/react-query";
 import { getAllBikeStations } from "../api/bikeStationApi";
-import { getUserStatus } from "../api/userApi";
+import { getUserState } from "../api/userApi";
 import Header from "../components/Header";
 import { StationUpdated, useMapWebSocket } from "../hooks/useMapWebSocket";
 
@@ -23,7 +23,7 @@ export default function HomePage() {
 
   const { data: userStateResponse, isLoading: isStatusLoading, isError: isStatusError } = useQuery({
     queryKey: ["userState"],
-    queryFn: getUserStatus
+    queryFn: getUserState
   });
 
   const { init, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
