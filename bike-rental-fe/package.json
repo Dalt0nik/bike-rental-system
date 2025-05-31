@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "lintFix": "eslint --fix .",
+    "dryBuild": "tsc -b",
+    "lint": "tsc --noEmit && eslint .",
+    "lintFix": "tsc --noEmit && eslint --fix .",
     "preview": "vite preview"
   },
   "dependencies": {

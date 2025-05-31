@@ -63,7 +63,8 @@ export default function HomePage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="text-red-500 text-xl font-bold mb-2">Server Error</div>
-          <div>Cannot have both active booking and trip simultaneously</div>
+          <div>Cannot have both active booking and trip simultaneously.</div>
+          <div>Contact support with your user ID: {userStateResponse.id}.</div>
         </div>
       </div>
     );
