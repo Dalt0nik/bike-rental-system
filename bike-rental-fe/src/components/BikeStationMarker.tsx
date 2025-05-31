@@ -40,17 +40,10 @@ export interface BikeStationMarkerProps {
   userState: UserState;
 }
 
-export function BikeStationMarker(props: BikeStationMarkerProps) {
+export function BikeStationMarker({ station, userState }: BikeStationMarkerProps) {
   const createBookingMutation = useCreateBooking();
 
-  const { station, userState } = props;
-
   const handleBookBike = async (station: BikeStationPreviewResponse) => {
-    if (!station || station.freeBikes === 0) {
-      console.error("No available bikes at this station");
-      return;
-    }
-
     try {
       // Fetch the detailed station data to get actual bike IDs
       const stationDetails = await getBikeStation(station.id);
@@ -73,37 +66,39 @@ export function BikeStationMarker(props: BikeStationMarkerProps) {
     }
   };
 
+  const isUserBookingAtThisStation = userState.status === UserStatus.HAS_BOOKING && station.id === userState.booking.bikeStationId;
+
   return (
     <Marker
       position={[station.latitude, station.longitude]}
-      icon={userState.status === UserStatus.OnTrip || userState.status === UserStatus.HasBooking ? orangeIcon : defaultIcon}
+      icon={userState.status === UserStatus.ON_TRIP || isUserBookingAtThisStation ? orangeIcon : defaultIcon}
     >
       <Popup>
         <strong>{station.address}</strong>
-        {userState.status === UserStatus.OnTrip ? (
+        {userState.status === UserStatus.ON_TRIP && (
           <>
             <br /><span className="text-blue-600 font-bold">Available for Return</span>
             <br />Free Capacity: {station.freeCapacity}
-          </>
-        ) : userState.status === UserStatus.HasBooking && station.id === userState.booking.bikeStationId ? (
+          </>)}
+        {isUserBookingAtThisStation && (
           <>
             <br /><span className="text-orange-600 font-bold">Booked bike in this station</span>
-          </>
-        ) : (
+          </>)}
+        {userState.status === UserStatus.FREE && (
           <>
             <br />Free Bikes: {station.freeBikes}
-            {station.freeBikes > 0 && (<>
-              <br />
-              <button
-                onClick={() => handleBookBike(station)}
-                disabled={createBookingMutation.isPending}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
-              >
-                {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
-              </button>
-            </>)}
-          </>
-        )}
+            {station.freeBikes > 0 && (
+              <>
+                <br />
+                <button
+                  onClick={() => handleBookBike(station)}
+                  disabled={createBookingMutation.isPending}
+                  className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
+                >
+                  {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
+                </button>
+              </>)}
+          </>)}
         <br />Capacity: {station.capacity}
       </Popup>
     </Marker>

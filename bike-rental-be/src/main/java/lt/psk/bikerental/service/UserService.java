@@ -3,7 +3,6 @@ package lt.psk.bikerental.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
@@ -79,13 +78,6 @@ public class UserService {
                 .findFirstByUserIdAndStartTimeBeforeAndFinishTimeAfter(user.getId(), now, now)
                 .map(b -> modelMapper.map(b, BookingDTO.class))
                 .orElse(null);
-
-        if(bookingDTO != null) {
-            BikeDTO rentedBike = bikeService.getBikeById(bookingDTO.getBookedBikeId());
-
-            log.info("rented bike: {}", rentedBike);
-            bookingDTO.setBikeStationId(rentedBike.getCurStationId());
-        }
 
         TripDTO tripDTO = tripRepository
                 .findTopByUserAndState(user, TripState.ONGOING)

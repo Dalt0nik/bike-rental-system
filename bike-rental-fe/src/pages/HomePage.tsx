@@ -58,7 +58,7 @@ export default function HomePage() {
     );
 
   const userState = deriveUserState(userStateResponse);
-  if (userState.status === UserStatus.Invalid) {
+  if (userState.status === UserStatus.INVALID) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
@@ -72,10 +72,10 @@ export default function HomePage() {
 
   // Determine which stations to render based on user state
   let stationsToRender = stations;
-  if (userState.status === UserStatus.OnTrip) {
+  if (userState.status === UserStatus.ON_TRIP) {
     // During trip: show only stations with free capacity > 0
     stationsToRender = stations.filter(station => station.freeCapacity > 0);
-  } else if (userState.status === UserStatus.HasBooking) {
+  } else if (userState.status === UserStatus.HAS_BOOKING) {
     // During booking: show only the booked station
     stationsToRender = stations.filter(station => station.id === userState.booking.bikeStationId);
   }
@@ -84,7 +84,7 @@ export default function HomePage() {
     <div className="fixed inset-0 flex flex-col">
       <Header />
       {/* Booking timer */}
-      {userState.status === UserStatus.HasBooking &&
+      {userState.status === UserStatus.HAS_BOOKING &&
         <BookingTimer
           finishTime={userState.booking.finishTime}
           stationAddress={stations.find(station => station.id === userState.booking.bikeStationId)?.address}
@@ -92,7 +92,7 @@ export default function HomePage() {
       }
 
       {/* Trip timer */}
-      {userState.status === UserStatus.OnTrip &&
+      {userState.status === UserStatus.ON_TRIP &&
         <TripTimer startTime={userState.trip.startTime} />
       }
 
