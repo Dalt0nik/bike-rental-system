@@ -7,7 +7,7 @@ import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
-import lt.psk.bikerental.DTO.User.UserStatusDTO;
+import lt.psk.bikerental.DTO.User.UserStateDTO;
 import lt.psk.bikerental.entity.TripState;
 import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.*;
@@ -68,7 +68,7 @@ public class UserService {
         userRepository.save(newUser);
         return true;
     }
-    public UserStatusDTO getUserStatus(Jwt token) {
+    public UserStateDTO getUserStatus(Jwt token) {
         Instant now = Instant.now();
 
         String auth0Id = token.getClaim("sub");
@@ -92,7 +92,7 @@ public class UserService {
                 .map(t -> modelMapper.map(t, TripDTO.class))
                 .orElse(null);
 
-        return UserStatusDTO.builder()
+        return UserStateDTO.builder()
                 .booking(bookingDTO)
                 .trip(tripDTO)
                 .build();

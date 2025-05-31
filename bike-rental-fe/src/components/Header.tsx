@@ -1,11 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth0()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const toggleMenu = () => setIsMenuOpen(v => !v)
+  const { user, isAuthenticated, logout } = useAuth0();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleMenu = () => setIsMenuOpen(v => !v);
 
   return (
     <>
@@ -72,5 +72,5 @@ export default function Header() {
         </div>
       )}
     </>
-  )
+  );
 }

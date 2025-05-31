@@ -103,8 +103,10 @@ export const useWebSocket = () => {
   };
 
   const unsubscribeTopic = (brokerPath: string) => {
-    stompClientRef.current?.connected &&
-      subscriptionsRef.current.get(brokerPath)?.unsubscribe();
+    if (!stompClientRef.current?.connected)
+      return;
+
+    subscriptionsRef.current.get(brokerPath)?.unsubscribe();
   };
 
   const sendMessage = (

@@ -1,6 +1,6 @@
 import { api } from "./Api";
-import { UserStatusResponse } from "../models/user";
+import { UserStateResponse } from "../models/user";
 
-export async function getUserStatus(): Promise<UserStatusResponse> {
-    return (await api.get<UserStatusResponse>("/users/status")).data;
+export async function getUserStatus(): Promise<UserStateResponse> {
+  return (await api.get<UserStateResponse>("/users/status")).data;
 }

@@ -12,7 +12,7 @@ import lt.psk.bikerental.DTO.Trip.TripDTO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserStatusDTO {
+public class UserStateDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private BookingDTO booking;
     @JsonInclude(JsonInclude.Include.NON_NULL)
