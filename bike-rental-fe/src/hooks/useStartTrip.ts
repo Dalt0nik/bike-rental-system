@@ -1,23 +1,15 @@
-// src/hooks/useCreateBooking.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createBooking } from "../api/bookingApi";
-import { BookingResponse, CreateBookingRequest } from "../models/booking";
+import { startTrip } from "../api/tripApi";
 import { UserStateResponse } from "../models/user";
+import { CreateTripRequest, TripResponse } from "../models/trip";
 
-// Extended request type that includes station ID for optimistic updates
-interface CreateBookingWithStationRequest extends CreateBookingRequest {
-  bikeStationId: string;
-}
-
-export function useCreateBooking() {
+export function useStartTrip() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // Only send the booking request part to the API
-    mutationFn: (request: CreateBookingWithStationRequest) =>
-      createBooking({ bookedBikeId: request.bookedBikeId }),
+    mutationFn: startTrip,
 
-    onMutate: async (newBookingRequest: CreateBookingWithStationRequest) => {
+    onMutate: async (newTripRequest: CreateTripRequest) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ["userState"] });
 
@@ -27,34 +19,33 @@ export function useCreateBooking() {
       const dateNow = Date.now();
       const tempId = `temp-${dateNow}`; // Temporary ID
 
-      const optimisticBooking: BookingResponse = {
+      const optimisticTrip: TripResponse = {
         id: tempId,
-        bookedBikeId: newBookingRequest.bookedBikeId,
-        bikeStationId: newBookingRequest.bikeStationId, // Now we have this!
+        bikeId: newTripRequest.bikeId,
         userId: previousUserState?.id ?? tempId,
         startTime: new Date(dateNow).toISOString(),
-        finishTime: new Date(dateNow + 20 * 60 * 1000).toISOString(), // 20 minutes from now
       };
 
       queryClient.setQueryData<UserStateResponse>(["userState"], (old) => ({
         id: tempId,
         ...old,
-        booking: optimisticBooking,
+        booking: undefined,
+        trip: optimisticTrip,
       }));
 
       return { previousUserState };
     },
 
-    onError: (err, _newBookingRequest, context) => {
+    onError: (err, _newTripRequest, context) => {
       if (context?.previousUserState) {
         queryClient.setQueryData(["userState"], context.previousUserState);
       }
-      console.error("Booking failed:", err);
+      console.error("Failed to start trip:", err);
     },
 
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: ["userState"] });
       await queryClient.invalidateQueries({ queryKey: ["allBikeStations"] });
-    },
+    }
   });
 }

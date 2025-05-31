@@ -1,8 +1,7 @@
 package lt.psk.bikerental.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lt.psk.bikerental.DTO.User.UserStatusDTO;
+import lt.psk.bikerental.DTO.User.UserStateDTO;
 import lt.psk.bikerental.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +28,8 @@ public class UserController {
                 : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     @GetMapping("/status")
-    public ResponseEntity<UserStatusDTO> status(@AuthenticationPrincipal Jwt jwt) {
-        UserStatusDTO status = userService.getUserStatus(jwt);
+    public ResponseEntity<UserStateDTO> status(@AuthenticationPrincipal Jwt jwt) {
+        UserStateDTO status = userService.getUserStatus(jwt);
         return ResponseEntity.ok(status);
     }
 

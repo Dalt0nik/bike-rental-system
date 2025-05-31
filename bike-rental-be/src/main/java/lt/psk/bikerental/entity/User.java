@@ -29,4 +29,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Booking> bookings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Trip> trips = new ArrayList<>();
 }

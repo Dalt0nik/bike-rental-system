@@ -23,7 +23,7 @@ export const useWebSocket = () => {
     return () => {
       // only deactivate if active, to avoid the StrictMode warning
       if (stompClientRef.current?.active) {
-        stompClientRef.current.deactivate();
+        void stompClientRef.current.deactivate();
       }
     };
   }, []);
@@ -80,7 +80,7 @@ export const useWebSocket = () => {
       console.warn("Cannot deactivate on absent connection");
       return;
     }
-    stompClientRef.current.deactivate();
+    void stompClientRef.current.deactivate();
     stompClientRef.current = null;
   };
 
@@ -96,15 +96,17 @@ export const useWebSocket = () => {
       brokerPath,
       (message: IMessage) => {
         setMessages((prev) => [...prev, message]);
-        handleMessageCallback(JSON.parse(message.body));
+        handleMessageCallback(JSON.parse(message.body) as EventResponse);
       },
     );
     subscriptionsRef.current.set(brokerPath, newSub);
   };
 
   const unsubscribeTopic = (brokerPath: string) => {
-    stompClientRef.current?.connected &&
-      subscriptionsRef.current.get(brokerPath)?.unsubscribe();
+    if (!stompClientRef.current?.connected)
+      return;
+
+    subscriptionsRef.current.get(brokerPath)?.unsubscribe();
   };
 
   const sendMessage = (
