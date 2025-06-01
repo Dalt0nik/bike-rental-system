@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserStatusDTO {
+public class UserStateDTO {
+    private UUID id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private BookingDTO booking;
     @JsonInclude(JsonInclude.Include.NON_NULL)

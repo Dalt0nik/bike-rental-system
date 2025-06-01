@@ -60,7 +60,8 @@ public class ModelMapperConfig {
         // Booking-DTO specific converters, mappings
         mapper.createTypeMap(Booking.class, BookingDTO.class)
                 .addMapping(Booking::getBike, BookingDTO::setBookedBikeId)
-                .addMapping(Booking::getUser, BookingDTO::setUserId);
+                .addMapping(Booking::getUser, BookingDTO::setUserId)
+                .addMapping(b -> b.getBike().getCurStation(), BookingDTO::setBikeStationId);
 
         mapper.createTypeMap(CreateBookingDTO.class, Booking.class)
                 .addMapping(CreateBookingDTO::getBookedBikeId, Booking::setBike);

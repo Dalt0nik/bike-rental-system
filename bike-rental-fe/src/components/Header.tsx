@@ -1,11 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth0()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const toggleMenu = () => setIsMenuOpen(v => !v)
+  const { user, isAuthenticated, logout } = useAuth0();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleMenu = () => setIsMenuOpen(v => !v);
 
   return (
     <>
@@ -22,9 +22,7 @@ export default function Header() {
               Welcome, {user?.email}
             </span>
             <button
-              onClick={() =>
-                logout({ logoutParams: { returnTo: window.location.origin } })
-              }
+              onClick={() => void logout({ logoutParams: { returnTo: window.location.origin } })}
               className="bg-white text-blue-500 py-1.5 px-6 rounded font-bold text-sm hover:bg-blue-50 transition-colors"
             >
               Log Out
@@ -63,7 +61,7 @@ export default function Header() {
           </div>
           <button
             onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
+              void logout({ logoutParams: { returnTo: window.location.origin } })
             }
             className="bg-white text-blue-500 py-2 px-6 rounded font-bold w-full hover:bg-blue-50 transition-colors"
           >
@@ -72,5 +70,5 @@ export default function Header() {
         </div>
       )}
     </>
-  )
+  );
 }
