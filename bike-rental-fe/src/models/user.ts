@@ -2,7 +2,7 @@ import { BookingResponse } from "./booking";
 import { TripResponse } from "./trip";
 
 export interface UserStateResponse {
-  id?: string;
+  id: string;
   booking?: BookingResponse;
   trip?: TripResponse;
 }

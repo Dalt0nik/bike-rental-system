@@ -7,7 +7,6 @@ import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
 import lt.psk.bikerental.DTO.User.UserStateDTO;
-import lt.psk.bikerental.entity.TripState;
 import lt.psk.bikerental.entity.User;
 import lt.psk.bikerental.repository.*;
 import org.modelmapper.ModelMapper;
@@ -80,11 +79,12 @@ public class UserService {
                 .orElse(null);
 
         TripDTO tripDTO = tripRepository
-                .findTopByUserAndState(user, TripState.ONGOING)
+                .findTopByUserAndFinishTimeIsNull(user)
                 .map(t -> modelMapper.map(t, TripDTO.class))
                 .orElse(null);
 
         return UserStateDTO.builder()
+                .id(user.getId())
                 .booking(bookingDTO)
                 .trip(tripDTO)
                 .build();
