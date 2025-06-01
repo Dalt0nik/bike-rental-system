@@ -16,13 +16,11 @@ import java.util.UUID;
 public class BookingDTO {
     private UUID id;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID bookedBikeId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID bikeStationId;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private UUID userId;
 
     private Instant startTime;

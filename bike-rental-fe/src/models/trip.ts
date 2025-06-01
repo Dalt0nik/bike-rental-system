@@ -4,3 +4,7 @@ export interface TripResponse {
   userId: string;
   startTime: string; // ISO string
 }
+
+export interface CreateTripRequest {
+  bikeId: string;
+}

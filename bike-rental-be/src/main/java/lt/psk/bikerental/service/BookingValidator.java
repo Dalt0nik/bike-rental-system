@@ -1,13 +1,11 @@
 package lt.psk.bikerental.service;
 
 import lombok.RequiredArgsConstructor;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.BikeState;
-import lt.psk.bikerental.entity.Booking;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.exception.BikeNotAvailableException;
 import lt.psk.bikerental.exception.InvalidBookingException;
 import lt.psk.bikerental.repository.BookingRepository;
+import lt.psk.bikerental.repository.TripRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -18,11 +16,12 @@ import java.util.Optional;
 public class BookingValidator {
 
     private final BookingRepository bookingRepository;
+    private final TripRepository tripRepository;
 
     public void validateBookingCreation(Bike bike, User user) {
         checkBikeIsFree(bike);
         checkUserHasNoActiveBookedBikes(user);
-        // checkUserHasNoOngoingTrip(user); // TO DO when Trip is merged
+        checkUserHasNoOngoingTrip(user);
     }
 
     private void checkBikeIsFree(Bike bike) {
@@ -39,7 +38,10 @@ public class BookingValidator {
         }
     }
 
-    // TO DO when Trip is merged
-//    private void checkUserHasNoOngoingTrip(User user) {
-//    }
+    private void checkUserHasNoOngoingTrip(User user) {
+        Optional<Trip> trip = tripRepository.findTopByUserAndFinishTimeIsNull(user);
+        if (trip.isPresent()) {
+            throw new InvalidBookingException("You are already on a trip");
+        }
+    }
 }

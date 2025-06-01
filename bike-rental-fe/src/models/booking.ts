@@ -1,8 +1,8 @@
 export interface BookingResponse {
   id: string;
-  bookedBikeId?: string;
+  bookedBikeId: string;
   bikeStationId?: string;
-  userId?: string;
+  userId: string;
   startTime: string; // ISO string
   finishTime: string; // ISO string
 }

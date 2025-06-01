@@ -19,11 +19,11 @@ public class Booking {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "booked_bike_id", referencedColumnName = "id")
+    @JoinColumn(name = "booked_bike_id", referencedColumnName = "id", nullable = false)
     private Bike bike;
 
     @Column(nullable = false)

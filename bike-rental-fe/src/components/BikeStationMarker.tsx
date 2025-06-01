@@ -8,6 +8,8 @@ import { BikeState } from "../models/bike";
 
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { useStartTrip } from "../hooks/useStartTrip";
+import { BookingResponse } from "../models/booking";
 
 const defaultIcon = L.icon({
   iconUrl,
@@ -42,6 +44,31 @@ export interface BikeStationMarkerProps {
 
 export function BikeStationMarker({ station, userState }: BikeStationMarkerProps) {
   const createBookingMutation = useCreateBooking();
+  const startTripMutation = useStartTrip();
+
+  const handleStartTrip = async (station: BikeStationPreviewResponse, bookingResponse?: BookingResponse) => {
+    if (bookingResponse !== undefined) {
+      startTripMutation.mutate({ bikeId: bookingResponse.bookedBikeId });
+      return;
+    }
+
+    try {
+      // Fetch the detailed station data to get actual bike IDs
+      const stationDetails = await getBikeStation(station.id);
+
+      // Find the first available bike (FREE state)
+      const availableBike = stationDetails.bikes.find(bike => bike.state === BikeState.FREE);
+
+      if (!availableBike) {
+        console.error("No available bikes found at station", station.id);
+        return;
+      }
+
+      startTripMutation.mutate({ bikeId: availableBike.id });
+    } catch (error) {
+      console.error("Failed to fetch station details:", error);
+    }
+  };
 
   const handleBookBike = async (station: BikeStationPreviewResponse) => {
     try {
@@ -52,7 +79,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
       const availableBike = stationDetails.bikes.find(bike => bike.state === BikeState.FREE);
 
       if (!availableBike) {
-        console.error("No available bikes found at this station");
+        console.error("No available bikes found at station", station.id);
         return;
       }
 
@@ -87,17 +114,27 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
         {userState.status === UserStatus.FREE && (
           <>
             <br />Free Bikes: {station.freeBikes}
-            {station.freeBikes > 0 && (
-              <>
-                <br />
-                <button
-                  onClick={() => void handleBookBike(station)}
-                  disabled={createBookingMutation.isPending}
-                  className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
-                >
-                  {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
-                </button>
-              </>)}
+          </>)}
+        {(station.freeBikes > 0 && userState.status === UserStatus.FREE || isUserBookingAtThisStation) && (
+          <>
+            <br />
+
+            {userState.status === UserStatus.FREE && (
+              <button
+                onClick={() => void handleBookBike(station)}
+                disabled={createBookingMutation.isPending}
+                className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+              >
+                {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
+              </button>)}
+
+            <button
+              onClick={() => void handleStartTrip(station, isUserBookingAtThisStation ? userState.booking : undefined)}
+              disabled={startTripMutation.isPending}
+              className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+            >
+              {startTripMutation.isPending ? "Starting trip..." : "Start Trip"}
+            </button>
           </>)}
         <br />Capacity: {station.capacity}
       </Popup>
