@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllExpenses } from "../api/expenseApi";
 import { ExpenseResponse } from "../models/expense";
 import Header from "../components/Header";
-import { Calendar, Clock, Bike } from "lucide-react";
+import { Calendar, Clock, Bike, KeyRound } from "lucide-react";
 
 export default function ExpensesPage() {
   const { data: expenses = [], isLoading, isError } = useQuery({
@@ -22,18 +22,55 @@ export default function ExpensesPage() {
     return `€${amount.toFixed(2)}`;
   };
 
+  const calculateTripDuration = (startTime: string, finishTime?: string) => {
+    if (!finishTime) return "In progress";
+    
+    const start = new Date(startTime);
+    const end = new Date(finishTime);
+    const diffMs = end.getTime() - start.getTime();
+    
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  };
+
   const getExpenseType = (expense: ExpenseResponse) => {
     const { tripDTO, bookingDTO, checkDTO } = expense;
     
-    if (tripDTO && checkDTO.bookingId) {
-      return { type: "trip_with_booking", label: "Trip + Booking" };
-    } else if (tripDTO) {
-      return { type: "trip_only", label: "Trip" };
-    } else if (bookingDTO) {
+    // If there's a tripId in checkDTO, it's always a trip (even if it started from a booking)
+    if (checkDTO.tripId) {
+      if (checkDTO.bookingId) {
+        return { type: "trip_with_booking", label: "Trip + Booking" };
+      } else {
+        return { type: "trip_only", label: "Trip" };
+      }
+    } else if (checkDTO.bookingId) {
       return { type: "booking_only", label: "Booking" };
     }
     return { type: "unknown", label: "Unknown" };
   };
+
+  const getExpenseIcon = (expense: ExpenseResponse) => {
+    const { checkDTO } = expense;
+    const isPaid = checkDTO.paid;
+    const iconClass = isPaid ? "text-gray-400" : "text-blue-main";
+    
+    // If there's a tripId, always show bike icon (even if it started from booking)
+    if (checkDTO.tripId) {
+      return <Bike size={16} className={iconClass} />;
+    } else {
+      return <KeyRound size={16} className={iconClass} />;
+    }
+  };
+
+  const totalUnpaid = expenses
+    .filter(expense => !expense.checkDTO.paid)
+    .reduce((sum, expense) => sum + expense.checkDTO.total, 0);
 
   if (isLoading) {
     return (
@@ -89,7 +126,7 @@ export default function ExpensesPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <Bike size={16} className={isPaid ? "text-gray-400" : "text-blue-main"} />
+                          {getExpenseIcon(expense)}
                           <span className="font-medium">{expenseType.label}</span>
                           {isPaid && (
                             <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
@@ -104,17 +141,25 @@ export default function ExpensesPage() {
                             <span>Date: {formatDate(checkDTO.createdAt)}</span>
                           </div>
                           
-                          {tripDTO && (
-                            <div className="flex items-center gap-2">
-                              <Clock size={14} />
-                              <span>
-                                Trip: {formatTime(tripDTO.startTime)}
-                                {tripDTO.finishTime && ` - ${formatTime(tripDTO.finishTime)}`}
-                              </span>
-                            </div>
+                          {/* Show trip info if there's a tripId */}
+                          {checkDTO.tripId && tripDTO && (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <Clock size={14} />
+                                <span>
+                                  Trip: {formatTime(tripDTO.startTime)}
+                                  {tripDTO.finishTime && ` - ${formatTime(tripDTO.finishTime)}`}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Bike size={14} />
+                                <span>Duration: {calculateTripDuration(tripDTO.startTime, tripDTO.finishTime)}</span>
+                              </div>
+                            </>
                           )}
                           
-                          {bookingDTO && !tripDTO && (
+                          {/* Only show booking info if it's a pure booking (no tripId) */}
+                          {!checkDTO.tripId && bookingDTO && (
                             <div className="flex items-center gap-2">
                               <Clock size={14} />
                               <span>
@@ -124,7 +169,6 @@ export default function ExpensesPage() {
                           )}
                         </div>
                         
-                        {/* Fee breakdown */}
                         <div className="mt-2 text-xs space-y-1">
                           {checkDTO.bookingFee > 0 && (
                             <div>Booking fee: {formatCurrency(checkDTO.bookingFee)}</div>
@@ -151,6 +195,23 @@ export default function ExpensesPage() {
           )}
         </div>
       </div>
+      
+      {/* Footer with Pay button */}
+      {totalUnpaid > 0 && (
+        <div className="border-t bg-white p-4 shadow-lg">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div>
+              <div className="text-sm text-gray-600">Total unpaid</div>
+              <div className="text-xl font-bold text-blue-main">
+                {formatCurrency(totalUnpaid)}
+              </div>
+            </div>
+            <button className="bg-blue-main hover:bg-blue-darker text-white px-6 py-2 rounded font-medium transition-colors">
+              Pay Now
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

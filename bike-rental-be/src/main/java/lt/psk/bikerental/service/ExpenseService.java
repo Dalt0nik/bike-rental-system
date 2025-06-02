@@ -29,7 +29,8 @@ public class ExpenseService {
 
             if(check.getBookingId() != null) {
                 expense.setBookingDTO(bookingService.getBooking(check.getBookingId()));
-            } else if(check.getTripId() != null) {
+            }
+            if(check.getTripId() != null) {
                 expense.setTripDTO(tripService.getTrip(check.getTripId()));
             }
 

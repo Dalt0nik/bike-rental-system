@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
-import { Menu, X, Receipt } from "lucide-react";
+import { Menu, X, Receipt, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Header() {
@@ -19,6 +19,13 @@ export default function Header() {
         {/* inline nav ≥601px */}
         {isAuthenticated && (
           <div className="hidden sm:flex items-center gap-4">
+            <Link 
+              to="/" 
+              className="flex items-center gap-1 text-sm hover:text-blue-50 transition-colors"
+            >
+              <Map size={16} />
+              Map
+            </Link>
             <Link 
               to="/expenses" 
               className="flex items-center gap-1 text-sm hover:text-blue-50 transition-colors"
@@ -67,6 +74,15 @@ export default function Header() {
           <div className="text-lg font-medium text-blue-main">
             Welcome, {user?.email}
           </div>
+          
+          <Link 
+            to="/" 
+            onClick={() => setIsMenuOpen(false)}
+            className="flex items-center gap-2 text-blue-main hover:text-blue-darker transition-colors"
+          >
+            <Map size={18} />
+            View Map
+          </Link>
           
           <Link 
             to="/expenses" 
