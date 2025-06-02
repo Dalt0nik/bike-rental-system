@@ -562,6 +562,50 @@
 					]
 				},
 				{
+					"name": "check",
+					"item": [
+						{
+							"name": "get all checks",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/check",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"check"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get latest check",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/check/latest",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"check",
+										"latest"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "user",
 					"item": [
 						{

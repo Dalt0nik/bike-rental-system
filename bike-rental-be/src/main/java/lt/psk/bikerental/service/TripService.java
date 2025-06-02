@@ -34,6 +34,7 @@ public class TripService {
     private final BookingService bookingService;
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
+    private final BillingService billingService;
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
@@ -87,6 +88,8 @@ public class TripService {
 
         bikeRepository.save(trip.getBike());
         tripRepository.save(trip);
+
+        billingService.createAndSaveCheck(user, trip.getBooking(), trip);
         // TODO: websocket event
     }
 }
