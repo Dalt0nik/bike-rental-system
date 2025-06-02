@@ -2,7 +2,6 @@ package lt.psk.bikerental.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
 import lt.psk.bikerental.DTO.User.UserInfoDTO;
@@ -22,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
