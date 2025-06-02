@@ -28,8 +28,9 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/deactivate")
-    public void deactivateBooking(@PathVariable UUID id) {
-        bookingService.deactivateBooking(id);
+    public void deactivateBooking(@PathVariable UUID id,  @AuthenticationPrincipal Jwt jwt) {
+
+        bookingService.deactivateBooking(id, jwt);
     }
 
 }

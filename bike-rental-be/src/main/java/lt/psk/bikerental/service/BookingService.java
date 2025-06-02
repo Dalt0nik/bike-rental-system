@@ -29,6 +29,7 @@ public class BookingService {
     private final ModelMapper modelMapper;
 
     private final BookingValidator bookingValidator;
+    private final BillingService billingService;
 
     @Transactional
     public BookingDTO createBooking(CreateBookingDTO createBookingDTO, Jwt jwt) {
@@ -60,9 +61,13 @@ public class BookingService {
     }
 
     @Transactional
-    public void deactivateBooking(UUID id) {
+    public void deactivateBooking(UUID id, Jwt jwt) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
+
+        String auth0Id = jwt.getSubject();
+        User user = userRepository.findByAuth0Id(auth0Id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Instant now = Instant.now();
         if (now.isAfter(booking.getFinishTime())) {
@@ -76,6 +81,8 @@ public class BookingService {
 
         bikeRepository.save(booking.getBike());
         bookingRepository.save(booking);
+
+        billingService.createAndSaveCheck(user, booking, null);
     }
 
     @Transactional
