@@ -12,17 +12,12 @@ CREATE TABLE checks
     CONSTRAINT pk_checks PRIMARY KEY (id)
 );
 
-ALTER TABLE trips
-    ADD booking_id UUID;
-
 ALTER TABLE checks
     ADD CONSTRAINT uc_checks_booking UNIQUE (booking_id);
 
 ALTER TABLE checks
     ADD CONSTRAINT uc_checks_trip UNIQUE (trip_id);
 
-ALTER TABLE trips
-    ADD CONSTRAINT uc_trips_booking UNIQUE (booking_id);
 
 ALTER TABLE checks
     ADD CONSTRAINT FK_CHECKS_ON_BOOKING FOREIGN KEY (booking_id) REFERENCES bookings (id);
@@ -33,11 +28,3 @@ ALTER TABLE checks
 ALTER TABLE checks
     ADD CONSTRAINT FK_CHECKS_ON_USER FOREIGN KEY (user_id) REFERENCES app_users (id);
 
-ALTER TABLE trips
-    ADD CONSTRAINT FK_TRIPS_ON_BOOKING FOREIGN KEY (booking_id) REFERENCES bookings (id);
-
-ALTER TABLE bookings
-    ALTER COLUMN booked_bike_id SET NOT NULL;
-
-ALTER TABLE bookings
-    ALTER COLUMN user_id SET NOT NULL;

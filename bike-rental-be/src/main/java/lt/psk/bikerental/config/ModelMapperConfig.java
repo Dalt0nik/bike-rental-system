@@ -6,14 +6,14 @@ import lt.psk.bikerental.DTO.Bike.BikeDTO;
 import lt.psk.bikerental.DTO.Bike.CreateBikeDTO;
 import lt.psk.bikerental.DTO.Booking.BookingDTO;
 import lt.psk.bikerental.DTO.Booking.CreateBookingDTO;
+import lt.psk.bikerental.DTO.Check.CheckDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.Booking;
-import lt.psk.bikerental.entity.Trip;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,16 +66,30 @@ public class ModelMapperConfig {
         mapper.createTypeMap(CreateBookingDTO.class, Booking.class)
                 .addMapping(CreateBookingDTO::getBookedBikeId, Booking::setBike);
 
-        mapper.createTypeMap(lt.psk.bikerental.entity.Check.class, lt.psk.bikerental.DTO.Check.CheckDTO.class)
-                .addMapping(check -> check.getUser().getId(), lt.psk.bikerental.DTO.Check.CheckDTO::setUserId)
-                .addMapping(
-                        check -> check.getBooking() != null ? check.getBooking().getId() : null,
-                        lt.psk.bikerental.DTO.Check.CheckDTO::setBookingId
-                )
-                .addMapping(
-                        check -> check.getTrip() != null ? check.getTrip().getId() : null,
-                        lt.psk.bikerental.DTO.Check.CheckDTO::setTripId
-                );
+        mapper.addMappings(new PropertyMap<Check, CheckDTO>() {
+            @Override
+            protected void configure() {
+                map().setUserId(source.getUser().getId());
+                map().setBookingId(null); // explicitly set to null by default
+                map().setTripId(null);
+            }
+        });
+
+        // Booking converter
+        Converter<Check, UUID> bookingIdConverter = ctx -> {
+            Check src = ctx.getSource();
+            return (src.getBooking() != null) ? src.getBooking().getId() : null;
+        };
+        mapper.typeMap(Check.class, CheckDTO.class)
+                .addMappings(m -> m.using(bookingIdConverter).map(src -> src, CheckDTO::setBookingId));
+
+        // Trip converter
+        Converter<Check, UUID> tripIdConverter = ctx -> {
+            Check src = ctx.getSource();
+            return (src.getTrip() != null) ? src.getTrip().getId() : null;
+        };
+        mapper.typeMap(Check.class, CheckDTO.class)
+                .addMappings(m -> m.using(tripIdConverter).map(src -> src, CheckDTO::setTripId));
         return mapper;
     }
 }
