@@ -63,4 +63,20 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(message);
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException ex) {
+        String message = "This action is forbidden";
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(message);
+    }
+
+    @ExceptionHandler(InvalidTripStateException.class)
+    public ResponseEntity<String> handleInvalidTripStateException(InvalidTripStateException ex) {
+        String message = "Invalid trip state";
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(message);
+    }
 }

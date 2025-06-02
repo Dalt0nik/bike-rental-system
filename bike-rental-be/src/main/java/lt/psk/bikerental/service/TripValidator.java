@@ -6,9 +6,8 @@ import lt.psk.bikerental.entity.BikeState;
 import lt.psk.bikerental.entity.Booking;
 import lt.psk.bikerental.entity.Trip;
 import lt.psk.bikerental.entity.User;
-import lt.psk.bikerental.exception.ActiveTripExistsException;
-import lt.psk.bikerental.exception.BikeNotAvailableException;
-import lt.psk.bikerental.exception.InvalidBookingException;
+import lt.psk.bikerental.exception.*;
+import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.TripRepository;
 import org.springframework.stereotype.Component;
@@ -23,6 +22,7 @@ public class TripValidator {
 
     private final TripRepository tripRepository;
     private final BookingRepository bookingRepository;
+    private final BikeRepository bikeRepository;
 
     public void validateStartTrip(Bike bike, User user, UUID requestedBikeId) {
         Instant now = Instant.now();
@@ -31,6 +31,20 @@ public class TripValidator {
         checkUserHasNoOtherOngoingBooking(user, requestedBikeId, now);
         checkBikeIsNotInUse(bike);
         checkBikeIsNotBookedByAnotherUser(bike, user, now);
+    }
+
+    public void validateEndTrip(Trip trip, User user) {
+        if(trip.getFinishTime() != null) {
+            throw new InvalidTripStateException("Trip has finished already");
+        }
+
+        if(trip.getUser().getId() != user.getId()) {
+            throw new ForbiddenException("Trip is assigned to another user");
+        }
+
+        if(trip.getBike().getCurStation() == null) {
+            throw new InvalidTripStateException("Bike is not parked");
+        }
     }
 
     private void checkBikeIsNotInUse(Bike bike) {
