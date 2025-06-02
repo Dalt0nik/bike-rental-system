@@ -128,7 +128,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
         {userState.status === UserStatus.ON_TRIP && (
           <>
             <br /><span className="text-blue-darker font-bold">Available for Return</span>
-            <br />Free Capacity: {station.freeCapacity}
+            <br />Free parking spaces: {station.freeCapacity}
           </>)}
         {isUserBookingAtThisStation && (
           <>
