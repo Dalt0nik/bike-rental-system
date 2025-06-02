@@ -96,7 +96,10 @@ export default function HomePage() {
 
       {/* Trip timer */}
       {userState.status === UserStatus.ON_TRIP &&
-        <TripTimer startTime={userState.trip.startTime} />
+        <TripTimer 
+          tripId={userState.trip.id}
+          startTime={userState.trip.startTime} 
+        />
       }
 
       <div className="relative flex-1 w-full">

@@ -1,8 +1,15 @@
-import { Bike } from "lucide-react";
+import { Bike, Square } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useFinishTrip } from "../hooks/useFinishTrip";
 
-export function TripTimer({ startTime }: { startTime: string }) {
+interface TripTimerProps {
+  tripId: string;
+  startTime: string;
+}
+
+export function TripTimer({ tripId, startTime }: TripTimerProps) {
   const [timeElapsed, setTimeElapsed] = useState<string>("");
+  const finishTripMutation = useFinishTrip();
 
   useEffect(() => {
     const updateTimer = () => {
@@ -27,6 +34,10 @@ export function TripTimer({ startTime }: { startTime: string }) {
     return () => clearInterval(interval);
   }, [startTime]);
 
+  const handleFinishTrip = () => {
+    finishTripMutation.mutate(tripId);
+  };
+
   return (
     <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-blue-main text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
       <div className="font-bold">Time traveled:</div>
@@ -35,7 +46,14 @@ export function TripTimer({ startTime }: { startTime: string }) {
         <Bike size={14} />
         Trip in progress
       </div>
-      
+      <button
+        onClick={handleFinishTrip}
+        disabled={finishTripMutation.isPending}
+        className="mt-2 bg-orange-dark hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1 mx-auto"
+      >
+        <Square size={12} />
+        {finishTripMutation.isPending ? "Finishing..." : "Finish Trip"}
+      </button>
     </div>
   );
 }
