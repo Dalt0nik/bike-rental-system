@@ -43,4 +43,9 @@ public class BikeStationController {
     public void deleteBikeStation(@PathVariable UUID id) {
         bikeStationService.deleteBikeStation(id);
     }
+
+    @PostMapping("{stationId}/park/{bikeId}")
+    public void parkBike(@PathVariable UUID stationId, @PathVariable UUID bikeId) {
+        bikeStationService.parkBike(stationId, bikeId);
+    }
 }
