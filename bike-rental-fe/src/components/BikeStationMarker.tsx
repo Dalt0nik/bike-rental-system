@@ -109,6 +109,15 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
     return defaultWhiteIcon;  // Default blue for free stations
   };
 
+  const getTripPricing = () => {
+    if (userState.status === UserStatus.FREE) {
+      return "€1.00 + €0.50/min";
+    } else if (userState.status === UserStatus.HAS_BOOKING) {
+      return "€0.50/min";
+    }
+    return "";
+  };
+
   return (
     <Marker
       position={[station.latitude, station.longitude]}
@@ -129,27 +138,35 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
           <>
             <br />Free Bikes: {station.freeBikes}
           </>)}
+        
         {(station.freeBikes > 0 && userState.status === UserStatus.FREE || isUserBookingAtThisStation) && (
-          <>
-            <br />
-
+          <div className="mt-2 space-y-2">
             {userState.status === UserStatus.FREE && (
-              <button
-                onClick={() => void handleBookBike(station)}
-                disabled={createBookingMutation.isPending}
-                className="mt-2 mr-1 mb-1 bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
-              >
-                {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
-              </button>)}
+              <div>
+                <div className="text-xs text-gray-600 mb-1">Booking fee: €2.00</div>
+                <button
+                  onClick={() => void handleBookBike(station)}
+                  disabled={createBookingMutation.isPending}
+                  className="w-full bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium block"
+                >
+                  {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
+                </button>
+              </div>
+            )}
 
-            <button
-              onClick={() => void handleStartTrip(station, isUserBookingAtThisStation ? userState.booking : undefined)}
-              disabled={startTripMutation.isPending}
-              className="mt-2 mb-1 bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
-            >
-              {startTripMutation.isPending ? "Starting trip..." : "Start Trip"}
-            </button>
-          </>)}
+            <div>
+              <div className="text-xs text-gray-600 mb-1">Trip cost: {getTripPricing()}</div>
+              <button
+                onClick={() => void handleStartTrip(station, isUserBookingAtThisStation ? userState.booking : undefined)}
+                disabled={startTripMutation.isPending}
+                className="w-full bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium block"
+              >
+                {startTripMutation.isPending ? "Starting trip..." : "Start Trip"}
+              </button>
+            </div>
+          </div>
+        )}
+        
         <br />Capacity: {station.capacity}
       </Popup>
     </Marker>
