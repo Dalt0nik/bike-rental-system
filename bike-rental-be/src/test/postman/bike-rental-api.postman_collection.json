@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "3f164420-0af7-4b8e-8f0d-157f00410dd8",
+		"_postman_id": "fe1e8700-3d4f-4812-bef4-cb5015651e5f",
 		"name": "bike-rental-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "43388435"
+		"_exporter_id": "31583616"
 	},
 	"item": [
 		{
@@ -619,6 +619,411 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "demo",
+			"item": [
+				{
+					"name": "data",
+					"item": [
+						{
+							"name": "create bike station Cathedral",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let responseData = pm.response.json();",
+											"pm.collectionVariables.set(\"bikeStationId\", responseData.id);",
+											"console.log(\"Saved bikeStationId:\", responseData.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"latitude\": 54.686243,\n  \"longitude\": 25.286933,\n  \"capacity\": 10,\n  \"address\": \"Cathedral Square, Vilnius, Lithuania\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "bulk create bikes 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bikes = pm.response.json();",
+											"pm.test(\"Bulk bike creation succeeded\", function () {",
+											"    pm.expect(bikes.length).to.be.above(0);",
+											"});",
+											"if (bikes.length > 0) {",
+											"    pm.collectionVariables.set(\"bikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bikeId:\", bikes[0].id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bikeStationId\": \"{{bikeStationId}}\",\n  \"numberOfBikes\": 10\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/bulk",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"bulk"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create bike station Lukiskiu",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let responseData = pm.response.json();",
+											"pm.collectionVariables.set(\"bikeStationId\", responseData.id);",
+											"console.log(\"Saved bikeStationId:\", responseData.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"latitude\": 54.689801,\n  \"longitude\": 25.271899,\n  \"capacity\": 8,\n  \"address\": \"Lukiskiu Square, Vilnius, Lithuania\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "bulk create bikes 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bikes = pm.response.json();",
+											"pm.test(\"Bulk bike creation succeeded\", function () {",
+											"    pm.expect(bikes.length).to.be.above(0);",
+											"});",
+											"if (bikes.length > 0) {",
+											"    pm.collectionVariables.set(\"bikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bikeId:\", bikes[0].id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bikeStationId\": \"{{bikeStationId}}\",\n  \"numberOfBikes\": 5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/bulk",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"bulk"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create bike station Cup",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let responseData = pm.response.json();",
+											"pm.collectionVariables.set(\"bikeStationId\", responseData.id);",
+											"console.log(\"Saved bikeStationId:\", responseData.id);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"latitude\": 54.694090,\n  \"longitude\": 25.275346,\n  \"capacity\": 10,\n  \"address\": \"CUP, Vilnius, Lithuania\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bike-stations",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "bulk create bikes 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let bikes = pm.response.json();",
+											"pm.test(\"Bulk bike creation succeeded\", function () {",
+											"    pm.expect(bikes.length).to.be.above(0);",
+											"});",
+											"if (bikes.length > 0) {",
+											"    pm.collectionVariables.set(\"bikeId\", bikes[0].id);",
+											"    console.log(\"Saved first bike id as bikeId:\", bikes[0].id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bikeStationId\": \"{{bikeStationId}}\",\n  \"numberOfBikes\": 10\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/bikes/bulk",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bikes",
+										"bulk"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "station service",
+					"item": [
+						{
+							"name": "park a bike",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/bike-stations/:bikeStationId/park/:bikeId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"bike-stations",
+										":bikeStationId",
+										"park",
+										":bikeId"
+									],
+									"variable": [
+										{
+											"key": "bikeStationId",
+											"value": "e583d8e3-24f8-4ad6-8f3b-8816767c304f"
+										},
+										{
+											"key": "bikeId",
+											"value": "e3d2d735-251d-4f59-9020-86fae8253c36"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		}
 	],
 	"auth": {
@@ -626,7 +1031,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "{{BEARER_TOKEN}}",
+				"value": "",
 				"type": "string"
 			}
 		]
