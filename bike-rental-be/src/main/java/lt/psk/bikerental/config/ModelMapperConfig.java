@@ -66,6 +66,16 @@ public class ModelMapperConfig {
         mapper.createTypeMap(CreateBookingDTO.class, Booking.class)
                 .addMapping(CreateBookingDTO::getBookedBikeId, Booking::setBike);
 
+        mapper.createTypeMap(lt.psk.bikerental.entity.Check.class, lt.psk.bikerental.DTO.Check.CheckDTO.class)
+                .addMapping(check -> check.getUser().getId(), lt.psk.bikerental.DTO.Check.CheckDTO::setUserId)
+                .addMapping(
+                        check -> check.getBooking() != null ? check.getBooking().getId() : null,
+                        lt.psk.bikerental.DTO.Check.CheckDTO::setBookingId
+                )
+                .addMapping(
+                        check -> check.getTrip() != null ? check.getTrip().getId() : null,
+                        lt.psk.bikerental.DTO.Check.CheckDTO::setTripId
+                );
         return mapper;
     }
 }
