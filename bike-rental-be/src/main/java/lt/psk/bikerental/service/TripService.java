@@ -65,7 +65,6 @@ public class TripService {
         // remove bike from station
         bike.setCurStation(null);
         bike.setState(IN_USE);
-        // TODO: websocket event
 
         return mapper.map(saved, TripDTO.class);
     }
@@ -90,6 +89,12 @@ public class TripService {
         tripRepository.save(trip);
 
         checkService.createAndSaveCheck(user, trip.getBooking(), trip);
-        // TODO: websocket event
+    }
+
+    public TripDTO getTrip(UUID tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
+
+        return mapper.map(trip, TripDTO.class);
     }
 }

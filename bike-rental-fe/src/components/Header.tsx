@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Receipt } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth0();
@@ -11,13 +12,20 @@ export default function Header() {
     <>
       <header className="bg-blue-main text-white h-[60px] w-full flex items-center justify-between px-4 shadow-md z-50">
         {/* title */}
-        <div className="font-bold text-base sm:text-xl whitespace-nowrap">
+        <Link to="/" className="font-bold text-base sm:text-xl whitespace-nowrap hover:text-blue-50 transition-colors">
           Bike Rental Map
-        </div>
+        </Link>
 
         {/* inline nav ≥601px */}
         {isAuthenticated && (
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-4">
+            <Link 
+              to="/expenses" 
+              className="flex items-center gap-1 text-sm hover:text-blue-50 transition-colors"
+            >
+              <Receipt size={16} />
+              Expenses
+            </Link>
             <span className="text-sm md:text-base">
               Welcome, {user?.email}
             </span>
@@ -56,9 +64,19 @@ export default function Header() {
           `}
           style={{ zIndex: 2000 }}
         >
-          <div className="text-lg font-medium">
+          <div className="text-lg font-medium text-blue-main">
             Welcome, {user?.email}
           </div>
+          
+          <Link 
+            to="/expenses" 
+            onClick={() => setIsMenuOpen(false)}
+            className="flex items-center gap-2 text-blue-main hover:text-blue-darker transition-colors"
+          >
+            <Receipt size={18} />
+            View Expenses
+          </Link>
+          
           <button
             onClick={() =>
               void logout({ logoutParams: { returnTo: window.location.origin } })
