@@ -17,7 +17,7 @@ public class BikeStationListener {
 
     @PostPersist
     @PostUpdate
-    private void onUpdatedStation(BikeStation station) {
+    public void onUpdatedStation(BikeStation station) {
         wsEventSendingService.sendStationUpdated(station);
     }
 }
