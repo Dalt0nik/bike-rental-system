@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class UserMapping {
-    public UserMapping(ModelMapper modelMapper) {
-        modelMapper
+    public UserMapping(ModelMapper mapper) {
+        mapper
                 .createTypeMap(UserInfoDTO.class, User.class)
                 .addMapping(UserInfoDTO::getSub,    User::setAuth0Id)
                 .addMapping(UserInfoDTO::getName,   User::setFullName);
