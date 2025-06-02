@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
@@ -29,10 +29,12 @@ export default function HomePage() {
     queryFn: getUserState
   });
 
-  const { init, isConnected, deactivateConnection } = useMapWebSocket((station: BikeStationPreviewResponse) => {
+  const onStationUpdated = useCallback((station: BikeStationPreviewResponse) => {
     queryClient.setQueryData(["allBikeStations"], (old: BikeStationPreviewResponse[]) => old.filter(x => x.id !== station.id).concat(station));
     console.log("Station updated:", station);
-  });
+  }, [queryClient]);
+
+  const { init, isConnected, deactivateConnection } = useMapWebSocket(onStationUpdated);
 
   useEffect(() => {
     if (!isConnected)

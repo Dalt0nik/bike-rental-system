@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { BikeStationPreviewResponse } from "../models/bikeStation";
 import { useWebSocket } from "./useWebSocket";
 
@@ -18,7 +19,7 @@ export function useMapWebSocket(
     deactivateConnection,
   } = useWebSocket();
 
-  const init = () => {
+  const init = useCallback(() => {
     initializeWebSocketClient(
       () => {
         // onConnect
@@ -34,7 +35,7 @@ export function useMapWebSocket(
       },
       () => {}
     );
-  };
+  }, [initializeWebSocketClient, onStationUpdated, subscribeToTopic]);
 
   return {
     init,

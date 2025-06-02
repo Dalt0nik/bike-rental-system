@@ -1,5 +1,5 @@
 // src/hooks/useWebSocket.ts
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Client,
   IMessage,
@@ -28,7 +28,7 @@ export const useWebSocket = () => {
     };
   }, []);
 
-  const initializeWebSocketClient = (
+  const initializeWebSocketClient = useCallback((
     onConnect: () => void,
     onDisconnect: () => void,
   ) => {
@@ -73,18 +73,18 @@ export const useWebSocket = () => {
 
     stompClient.activate();
     stompClientRef.current = stompClient;
-  };
+  }, []);
 
-  const deactivateConnection = () => {
+  const deactivateConnection = useCallback(() => {
     if (!stompClientRef.current?.active) {
       console.warn("Cannot deactivate on absent connection");
       return;
     }
     void stompClientRef.current.deactivate();
     stompClientRef.current = null;
-  };
+  }, []);
 
-  const subscribeToTopic = <EventResponse>(
+  const subscribeToTopic = useCallback(<EventResponse>(
     brokerPath: string,
     handleMessageCallback: (eventResponse: EventResponse) => void,
   ) => {
@@ -100,7 +100,7 @@ export const useWebSocket = () => {
       },
     );
     subscriptionsRef.current.set(brokerPath, newSub);
-  };
+  }, []);
 
   const unsubscribeTopic = (brokerPath: string) => {
     if (!stompClientRef.current?.connected)
