@@ -22,11 +22,10 @@ const defaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = defaultIcon;
 
-// Orange icon for booked station or available stations during trip
-const orangeIcon = L.icon({
+const createCustomIcon = (color: string) => L.icon({
   iconUrl: "data:image/svg+xml;base64," + btoa(`
     <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 19.4 12.5 41 12.5 41S25 19.4 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="#ff8c00"/>
+      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 19.4 12.5 41 12.5 41S25 19.4 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="${color}"/>
       <circle cx="12.5" cy="12.5" r="6" fill="white"/>
     </svg>
   `),
@@ -36,6 +35,11 @@ const orangeIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
+
+// Orange icon for booked station or available stations during trip
+const defaultWhiteIcon = createCustomIcon("#ffffff");
+const orangeIcon = createCustomIcon("#ff8c00");
+const darkBlueIcon = createCustomIcon("#7b2cbf");
 
 export interface BikeStationMarkerProps {
   station: BikeStationPreviewResponse;
@@ -95,21 +99,31 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
 
   const isUserBookingAtThisStation = userState.status === UserStatus.HAS_BOOKING && station.id === userState.booking.bikeStationId;
 
+  const getMarkerIcon = () => {
+    if (userState.status === UserStatus.ON_TRIP) {
+      return darkBlueIcon;  // dark blue for trip
+    }
+    if (isUserBookingAtThisStation) {
+      return orangeIcon;  // Orange for booking
+    }
+    return defaultWhiteIcon;  // Default blue for free stations
+  };
+
   return (
     <Marker
       position={[station.latitude, station.longitude]}
-      icon={userState.status === UserStatus.ON_TRIP || isUserBookingAtThisStation ? orangeIcon : defaultIcon}
+      icon={getMarkerIcon()}
     >
       <Popup>
         <strong>{station.address}</strong>
         {userState.status === UserStatus.ON_TRIP && (
           <>
-            <br /><span className="text-blue-600 font-bold">Available for Return</span>
+            <br /><span className="text-blue-darker font-bold">Available for Return</span>
             <br />Free Capacity: {station.freeCapacity}
           </>)}
         {isUserBookingAtThisStation && (
           <>
-            <br /><span className="text-orange-600 font-bold">Booked bike in this station</span>
+            <br /><span className="text-orange-dark font-bold">Booked bike in this station</span>
           </>)}
         {userState.status === UserStatus.FREE && (
           <>
@@ -123,7 +137,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
               <button
                 onClick={() => void handleBookBike(station)}
                 disabled={createBookingMutation.isPending}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+                className="mt-2 mr-1 mb-1 bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
               >
                 {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
               </button>)}
@@ -131,7 +145,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
             <button
               onClick={() => void handleStartTrip(station, isUserBookingAtThisStation ? userState.booking : undefined)}
               disabled={startTripMutation.isPending}
-              className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+              className="mt-2 mb-1 bg-blue-main hover:bg-blue-darker disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
             >
               {startTripMutation.isPending ? "Starting trip..." : "Start Trip"}
             </button>

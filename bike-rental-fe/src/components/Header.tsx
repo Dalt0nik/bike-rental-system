@@ -9,7 +9,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-blue-500 text-white h-[60px] w-full flex items-center justify-between px-4 shadow-md z-50">
+      <header className="bg-blue-main text-white h-[60px] w-full flex items-center justify-between px-4 shadow-md z-50">
         {/* title */}
         <div className="font-bold text-base sm:text-xl whitespace-nowrap">
           Bike Rental Map
@@ -23,7 +23,7 @@ export default function Header() {
             </span>
             <button
               onClick={() => void logout({ logoutParams: { returnTo: window.location.origin } })}
-              className="bg-white text-blue-500 py-1.5 px-6 rounded font-bold text-sm hover:bg-blue-50 transition-colors"
+              className="bg-white text-blue-main py-1.5 px-6 rounded font-bold text-sm hover:bg-blue-50 transition-colors"
             >
               Log Out
             </button>
@@ -49,7 +49,7 @@ export default function Header() {
           className={`
             fixed top-[60px] right-0 h-screen
             w-[80%] max-w-xs p-6
-            bg-blue-600 shadow-lg
+            bg-white shadow-lg
             transform transition-transform duration-300 ease-in-out
             flex sm:hidden flex-col gap-6
             ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
@@ -63,7 +63,7 @@ export default function Header() {
             onClick={() =>
               void logout({ logoutParams: { returnTo: window.location.origin } })
             }
-            className="bg-white text-blue-500 py-2 px-6 rounded font-bold w-full hover:bg-blue-50 transition-colors"
+            className="bg-blue-main text-white py-2 px-6 rounded font-bold w-full hover:bg-blue-dark transition-colors"
           >
             Log Out
           </button>
