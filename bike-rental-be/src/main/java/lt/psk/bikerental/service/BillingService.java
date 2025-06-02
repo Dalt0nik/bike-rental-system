@@ -29,7 +29,7 @@ public class BillingService {
         BigDecimal tripFee = BigDecimal.ZERO;
         if (trip != null) {
             Instant start = trip.getStartTime();
-            Instant finish = trip.getFinishTime() != null ? trip.getFinishTime() : Instant.now();// i don't like this but for now it works
+            Instant finish = trip.getFinishTime();
             long durationMinutes = Duration.between(start, finish).toMinutes();
             tripFee = BigDecimal.valueOf(billingProperties.getPricePerMinute())
                     .multiply(BigDecimal.valueOf(durationMinutes));
