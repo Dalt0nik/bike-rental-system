@@ -64,7 +64,6 @@ public class TripService {
         // remove bike from station
         bike.setCurStation(null);
         bike.setState(IN_USE);
-        // TODO: websocket event
 
         return modelMapper.map(saved, TripDTO.class);
     }
@@ -87,6 +86,5 @@ public class TripService {
 
         bikeRepository.save(trip.getBike());
         tripRepository.save(trip);
-        // TODO: websocket event
     }
 }
