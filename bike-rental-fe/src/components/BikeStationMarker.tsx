@@ -123,7 +123,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
               <button
                 onClick={() => void handleBookBike(station)}
                 disabled={createBookingMutation.isPending}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+                className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
               >
                 {createBookingMutation.isPending ? "Booking..." : "Book Bike"}
               </button>)}
@@ -131,7 +131,7 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
             <button
               onClick={() => void handleStartTrip(station, isUserBookingAtThisStation ? userState.booking : undefined)}
               disabled={startTripMutation.isPending}
-              className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-black px-3 py-1 rounded text-sm font-medium"
+              className="mt-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
             >
               {startTripMutation.isPending ? "Starting trip..." : "Start Trip"}
             </button>

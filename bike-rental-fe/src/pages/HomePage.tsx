@@ -88,6 +88,7 @@ export default function HomePage() {
       {/* Booking timer */}
       {userState.status === UserStatus.HAS_BOOKING &&
         <BookingTimer
+          bookingId={userState.booking.id}
           finishTime={userState.booking.finishTime}
           stationAddress={stations.find(station => station.id === userState.booking.bikeStationId)?.address}
         />

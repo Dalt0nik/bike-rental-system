@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
+import { useDeactivateBooking } from "../hooks/useDeactivateBooking";
 
-export function BookingTimer({ finishTime, stationAddress }: { finishTime: string; stationAddress?: string }) {
+export function BookingTimer({ 
+  bookingId,
+  finishTime, 
+  stationAddress 
+}: { 
+  bookingId: string;
+  finishTime: string; 
+  stationAddress?: string;
+}) {
   const [timeLeft, setTimeLeft] = useState<string>("");
+  const deactivateBookingMutation = useDeactivateBooking();
 
   useEffect(() => {
     const updateTimer = () => {
@@ -25,6 +35,10 @@ export function BookingTimer({ finishTime, stationAddress }: { finishTime: strin
     return () => clearInterval(interval);
   }, [finishTime]);
 
+  const handleCancelBooking = () => {
+    deactivateBookingMutation.mutate(bookingId);
+  };
+
   if (timeLeft === "Expired")
     return;
 
@@ -35,6 +49,13 @@ export function BookingTimer({ finishTime, stationAddress }: { finishTime: strin
       {stationAddress && (
         <div className="text-sm mt-1">Station: {stationAddress}</div>
       )}
+      <button
+        onClick={handleCancelBooking}
+        disabled={deactivateBookingMutation.isPending}
+        className="mt-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
+      >
+        {deactivateBookingMutation.isPending ? "Canceling..." : "Cancel Booking"}
+      </button>
     </div>
   );
 }
