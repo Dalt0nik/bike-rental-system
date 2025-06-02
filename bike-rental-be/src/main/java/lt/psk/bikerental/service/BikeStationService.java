@@ -6,7 +6,9 @@ import lt.psk.bikerental.DTO.BikeStation.BikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.BikeStationPreviewDTO;
 import lt.psk.bikerental.DTO.BikeStation.CreateBikeStationDTO;
 import lt.psk.bikerental.DTO.BikeStation.UpdateBikeStationDTO;
+import lt.psk.bikerental.entity.Bike;
 import lt.psk.bikerental.entity.BikeStation;
+import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
 import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
@@ -25,6 +27,7 @@ public class BikeStationService {
     private final ModelMapper modelMapper;
 
     private final WsEventSendingService wsEventSendingService;
+    private final BikeRepository bikeRepository;
 
     public List<BikeStationPreviewDTO> getAllBikeStations() {
         return bikeStationRepository.findAll().stream()
@@ -68,5 +71,17 @@ public class BikeStationService {
             throw new EntityNotFoundException("Bike station not found");
 
         bikeStationRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void parkBike(UUID bikeStationId, UUID bikeId) {
+        Bike bike = bikeRepository.findById(bikeId)
+                .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
+
+        BikeStation bikeStation = bikeStationRepository.findById(bikeStationId)
+                .orElseThrow(() -> new EntityNotFoundException("Bike station not found"));
+
+        bike.setCurStation(bikeStation);
+        bikeRepository.save(bike);
     }
 }

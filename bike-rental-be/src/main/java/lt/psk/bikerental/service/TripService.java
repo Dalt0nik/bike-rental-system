@@ -17,6 +17,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import static lt.psk.bikerental.entity.BikeState.FREE;
 import static lt.psk.bikerental.entity.BikeState.IN_USE;
 
 @Service
@@ -60,7 +64,29 @@ public class TripService {
         // remove bike from station
         bike.setCurStation(null);
         bike.setState(IN_USE);
+        // TODO: websocket event
 
         return mapper.map(saved, TripDTO.class);
+    }
+
+    @Transactional
+    public void endTrip(UUID tripId, Jwt jwt) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
+
+        String auth0Id = jwt.getSubject();
+        User user = userRepository.findByAuth0Id(auth0Id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        tripValidator.validateEndTrip(trip, user);
+
+        Instant now = Instant.now();
+        trip.setFinishTime(now);
+
+        trip.getBike().setState(FREE);
+
+        bikeRepository.save(trip.getBike());
+        tripRepository.save(trip);
+        // TODO: websocket event
     }
 }

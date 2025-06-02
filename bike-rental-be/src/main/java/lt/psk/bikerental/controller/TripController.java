@@ -8,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/trips")
 @RequiredArgsConstructor
@@ -18,5 +20,10 @@ public class TripController {
     @PostMapping
     public TripDTO startTrip(@RequestBody CreateTripDTO dto, @AuthenticationPrincipal Jwt jwt) {
         return tripService.startTrip(dto, jwt);
+    }
+
+    @PostMapping("/{id}")
+    public void endTrip(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        tripService.endTrip(id, jwt);
     }
 }
