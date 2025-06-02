@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDeactivateBooking } from "../hooks/useDeactivateBooking";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function BookingTimer({ 
   bookingId,
@@ -12,6 +13,7 @@ export function BookingTimer({
 }) {
   const [timeLeft, setTimeLeft] = useState<string>("");
   const deactivateBookingMutation = useDeactivateBooking();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const updateTimer = () => {
@@ -21,6 +23,8 @@ export function BookingTimer({
 
       if (diff <= 0) {
         setTimeLeft("Expired");
+        void queryClient.invalidateQueries({ queryKey: ["userState"] });
+        void queryClient.invalidateQueries({ queryKey: ["allBikeStations"] });
         return;
       }
 
@@ -33,17 +37,17 @@ export function BookingTimer({
     const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
-  }, [finishTime]);
+  }, [finishTime, queryClient]);
 
   const handleCancelBooking = () => {
     deactivateBookingMutation.mutate(bookingId);
   };
 
   if (timeLeft === "Expired")
-    return;
+    return null;
 
   return (
-    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
+    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-orange text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
       <div className="font-bold">Booking expires in:</div>
       <div className="text-xl font-mono">{timeLeft}</div>
       {stationAddress && (
@@ -52,7 +56,7 @@ export function BookingTimer({
       <button
         onClick={handleCancelBooking}
         disabled={deactivateBookingMutation.isPending}
-        className="mt-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
+        className="mt-2 bg-red-800 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium"
       >
         {deactivateBookingMutation.isPending ? "Canceling..." : "Cancel Booking"}
       </button>

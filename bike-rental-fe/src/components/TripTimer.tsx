@@ -1,3 +1,4 @@
+import { Bike } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function TripTimer({ startTime }: { startTime: string }) {
@@ -27,10 +28,14 @@ export function TripTimer({ startTime }: { startTime: string }) {
   }, [startTime]);
 
   return (
-    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
+    <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-blue-main text-white px-4 py-2 rounded-lg shadow-lg z-[1000] max-w-[50%] text-center">
       <div className="font-bold">Time traveled:</div>
       <div className="text-xl font-mono">{timeElapsed}</div>
-      <div className="text-sm mt-1">🚴 Trip in progress</div>
+      <div className="text-sm mt-1 flex items-center justify-center gap-1">
+        <Bike size={14} />
+        Trip in progress
+      </div>
+      
     </div>
   );
 }
