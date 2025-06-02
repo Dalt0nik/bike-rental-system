@@ -32,7 +32,7 @@ public class TripService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final BookingService bookingService;
-    private final ModelMapper mapper;
+    private final ModelMapper modelMapper;
     private final TripValidator tripValidator;
 
     @Transactional
@@ -66,7 +66,7 @@ public class TripService {
         bike.setState(IN_USE);
         // TODO: websocket event
 
-        return mapper.map(saved, TripDTO.class);
+        return modelMapper.map(saved, TripDTO.class);
     }
 
     @Transactional

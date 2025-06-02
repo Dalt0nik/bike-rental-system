@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useDeactivateBooking } from "../hooks/useDeactivateBooking";
 import { useQueryClient } from "@tanstack/react-query";
 
-export function BookingTimer({ 
+export function BookingTimer({
   bookingId,
-  finishTime, 
-  stationAddress 
-}: { 
+  finishTime,
+  stationAddress
+}: {
   bookingId: string;
-  finishTime: string; 
+  finishTime: string;
   stationAddress?: string;
 }) {
   const [timeLeft, setTimeLeft] = useState<string>("");

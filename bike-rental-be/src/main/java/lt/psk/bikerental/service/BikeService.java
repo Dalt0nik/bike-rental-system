@@ -40,13 +40,6 @@ public class BikeService {
         return modelMapper.map(bike, BikeDTO.class);
     }
 
-    public List<BikeDTO> getAllBikesByStationId(UUID stationId) {
-        return bikeRepository.findAllByCurStation_Id(stationId)
-                .stream()
-                .map(x -> modelMapper.map(x, BikeDTO.class))
-                .toList();
-    }
-
     @Transactional
     public BikeDTO createBike(CreateBikeDTO createBikeDTO) {
         Bike bike = modelMapper.map(createBikeDTO, Bike.class);

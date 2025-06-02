@@ -3,6 +3,7 @@ package lt.psk.bikerental.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lt.psk.bikerental.entity.listener.BikeStationListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "bike_stations")
+@EntityListeners(BikeStationListener.class)
 public class BikeStation {
 
     @Id
