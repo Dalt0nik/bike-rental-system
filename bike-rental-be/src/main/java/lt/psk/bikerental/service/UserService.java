@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +87,12 @@ public class UserService {
                 .booking(bookingDTO)
                 .trip(tripDTO)
                 .build();
+    }
+    public UUID getUserIdFromJwt(Jwt jwt) {
+        String auth0Id = jwt.getSubject();
+        User user = userRepository.findByAuth0Id(auth0Id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return user.getId();
     }
 
 }
