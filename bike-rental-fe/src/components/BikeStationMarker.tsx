@@ -37,10 +37,10 @@ const createCustomIcon = (color: string) => L.icon({
 });
 
 // Orange icon for booked station or available stations during trip
-const defaultWhiteIcon = createCustomIcon("#ffffff");
+const defaultWhiteIcon = createCustomIcon("#808ceb");
 const orangeIcon = createCustomIcon("#ff8c00");
 const darkBlueIcon = createCustomIcon("#7b2cbf");
-
+const grayIcon = createCustomIcon("#eaeaea");
 export interface BikeStationMarkerProps {
   station: BikeStationPreviewResponse;
   userState: UserState;
@@ -106,8 +106,12 @@ export function BikeStationMarker({ station, userState }: BikeStationMarkerProps
     if (isUserBookingAtThisStation) {
       return orangeIcon;  // Orange for booking
     }
-    return defaultWhiteIcon;  // Default blue for free stations
+    if (station.freeBikes === 0) {
+      return grayIcon; // gray icon if no free bikes
+    }
+    return defaultWhiteIcon;  // Default white for free stations
   };
+
 
   const getTripPricing = () => {
     if (userState.status === UserStatus.FREE) {
