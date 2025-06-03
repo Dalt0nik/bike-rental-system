@@ -34,7 +34,9 @@ public class BikeStationMapping {
 
         Converter<BikeStation, Integer> bikeStationFreeCapacityConverter = v ->
                 v.getSource() != null
-                        ? v.getSource().getCapacity() - v.getSource().getBikes().size()
+                        ? v.getSource().getCapacity() - (int)v.getSource().getBikes().stream()
+                            .filter(x -> x.getCurStation() != null ? x.getCurStation().getId() == v.getSource().getId() : false)
+                        .count()
                         : 0;
 
         Converter<List<Bike>, List<BikeDTO>> bikeStationBikesToBikeDTOsConverter = v ->
