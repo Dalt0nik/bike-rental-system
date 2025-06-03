@@ -2,7 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { startTrip } from "../api/tripApi";
 import { UserStateResponse } from "../models/user";
 import { CreateTripRequest, TripResponse } from "../models/trip";
-
+import axios from "axios";
+import toast from "react-hot-toast";
 export function useStartTrip() {
   const queryClient = useQueryClient();
 
@@ -40,7 +41,16 @@ export function useStartTrip() {
       if (context?.previousUserState) {
         queryClient.setQueryData(["userState"], context.previousUserState);
       }
-      console.error("Failed to start trip:", err);
+
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        toast.error("This trip could not be started because someone else took this bike. Refreshing...");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        console.error("Failed to start trip:", err);
+        toast.error("Something went wrong. Please try again.");
+      }
     },
 
     onSettled: async () => {

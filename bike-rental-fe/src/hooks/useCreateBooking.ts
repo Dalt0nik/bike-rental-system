@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createBooking } from "../api/bookingApi";
 import { BookingResponse, CreateBookingRequest } from "../models/booking";
 import { UserStateResponse } from "../models/user";
-
+import toast from "react-hot-toast";
+import axios from "axios";
 // Extended request type that includes station ID for optimistic updates
 interface CreateBookingWithStationRequest extends CreateBookingRequest {
   bikeStationId: string;
@@ -49,7 +50,21 @@ export function useCreateBooking() {
       if (context?.previousUserState) {
         queryClient.setQueryData(["userState"], context.previousUserState);
       }
-      console.error("Booking failed:", err);
+
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 409) {
+          toast.error("This record was updated by someone else. Refreshing to get the latest data...");
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
+      } else {
+        console.error("Booking failed:", err);
+        toast.error("Something went wrong. Please try again.");
+      }
     },
 
     onSettled: async () => {

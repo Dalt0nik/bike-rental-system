@@ -30,5 +30,8 @@ public class Bike {
     @OneToMany(mappedBy = "bike")
     private List<Booking> bookings = new ArrayList<>();
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
 }
