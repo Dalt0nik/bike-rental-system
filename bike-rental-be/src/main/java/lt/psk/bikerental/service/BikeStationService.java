@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class BikeStationService {
     @Transactional
     public BikeStationDTO createBikeStation(CreateBikeStationDTO dto) {
         BikeStation entity = modelMapper.map(dto, BikeStation.class);
+        entity.setBikes(new ArrayList<>());
         BikeStation saved = bikeStationRepository.save(entity);
         wsEventSendingService.sendStationUpdated(saved);
 
