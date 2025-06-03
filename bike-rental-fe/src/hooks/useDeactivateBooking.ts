@@ -31,5 +31,10 @@ export function useDeactivateBooking() {
       }
       console.error("Failed to cancel booking:", err);
     },
+
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["allBikeStations"] });
+      void queryClient.invalidateQueries({ queryKey: ["userState"] });
+    }
   });
 }

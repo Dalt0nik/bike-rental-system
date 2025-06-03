@@ -34,7 +34,7 @@ public class TripService {
     private final BookingService bookingService;
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
-    private final BillingService billingService;
+    private final CheckService checkService;
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
@@ -87,7 +87,14 @@ public class TripService {
 
         bikeRepository.save(trip.getBike());
         tripRepository.save(trip);
-      
-        billingService.createAndSaveCheck(user, trip.getBooking(), trip);
+
+        checkService.createAndSaveCheck(user, trip.getBooking(), trip);
+    }
+
+    public TripDTO getTrip(UUID tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
+
+        return mapper.map(trip, TripDTO.class);
     }
 }

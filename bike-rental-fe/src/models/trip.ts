@@ -3,6 +3,7 @@ export interface TripResponse {
   bikeId: string;
   userId: string;
   startTime: string; // ISO string
+  finishTime?: string; // ISO string
 }
 
 export interface CreateTripRequest {

@@ -16,5 +16,6 @@ public class CheckDTO {
     private BigDecimal unlockFee;
     private BigDecimal tripFee;
     private BigDecimal total;
+    private boolean paid;
     private Instant createdAt;
 }
