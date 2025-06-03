@@ -1,15 +1,16 @@
+import { useCallback } from "react";
+import { BikeStationPreviewResponse } from "../models/bikeStation";
 import { useWebSocket } from "./useWebSocket";
 
-export interface StationUpdated {
+interface StationUpdated {
   event: "station_updated";
-  stationId: string;
-  timestamp: string;
+  station: BikeStationPreviewResponse;
 }
 
-export type WebSocketEvent = StationUpdated;
+type WebSocketEvent = StationUpdated;
 
 export function useMapWebSocket(
-  onStationUpdated: (update: StationUpdated) => void
+  onStationUpdated: (station: BikeStationPreviewResponse) => void
 ) {
   const {
     initializeWebSocketClient,
@@ -18,21 +19,23 @@ export function useMapWebSocket(
     deactivateConnection,
   } = useWebSocket();
 
-  const init = () => {
+  const init = useCallback(() => {
     initializeWebSocketClient(
       () => {
         // onConnect
         console.log("Attempt to connect to map WebSocket");
         subscribeToTopic<WebSocketEvent>("/topic/map", (payload) => {
+          switch (payload.event) {
           // eslint-disable-next-line "@typescript-eslint/no-unnecessary-condition"
-          if (payload.event === "station_updated") {
-            onStationUpdated(payload);
+          case ("station_updated"):
+            onStationUpdated(payload.station);
+            break;
           }
         });
       },
       () => {}
     );
-  };
+  }, [initializeWebSocketClient, onStationUpdated, subscribeToTopic]);
 
   return {
     init,

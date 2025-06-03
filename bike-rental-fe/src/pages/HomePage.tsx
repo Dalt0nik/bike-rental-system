@@ -1,20 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllBikeStations } from "../api/bikeStationApi";
 import { getUserState } from "../api/userApi";
 import Header from "../components/Header";
-import { StationUpdated, useMapWebSocket } from "../hooks/useMapWebSocket";
+import { useMapWebSocket } from "../hooks/useMapWebSocket";
 
 // Fix Leaflet marker icons
 import { BikeStationMarker } from "../components/BikeStationMarker";
 import { UserStatus, deriveUserState } from "../models/user";
 import { BookingTimer } from "../components/BookingTimer";
 import { TripTimer } from "../components/TripTimer";
+import { BikeStationPreviewResponse } from "../models/bikeStation";
 
 export default function HomePage() {
+  const queryClient = useQueryClient();
+
   const mapRef = useRef<LeafletMap | null>(null);
   const { data: stations = [], isLoading: isBikesLoading, isError: isBikesError } = useQuery({
     queryKey: ["allBikeStations"],
@@ -26,9 +29,12 @@ export default function HomePage() {
     queryFn: getUserState
   });
 
-  const { init, isConnected, deactivateConnection } = useMapWebSocket((update: StationUpdated) => {
-    console.log("Station updated:", update);
-  });
+  const onStationUpdated = useCallback((station: BikeStationPreviewResponse) => {
+    queryClient.setQueryData(["allBikeStations"], (old: BikeStationPreviewResponse[]) => old.filter(x => x.id !== station.id).concat(station));
+    console.log("Station updated:", station);
+  }, [queryClient]);
+
+  const { init, isConnected, deactivateConnection } = useMapWebSocket(onStationUpdated);
 
   useEffect(() => {
     if (!isConnected)
@@ -96,9 +102,9 @@ export default function HomePage() {
 
       {/* Trip timer */}
       {userState.status === UserStatus.ON_TRIP &&
-        <TripTimer 
+        <TripTimer
           tripId={userState.trip.id}
-          startTime={userState.trip.startTime} 
+          startTime={userState.trip.startTime}
         />
       }
 
