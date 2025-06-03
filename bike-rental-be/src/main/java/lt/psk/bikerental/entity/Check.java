@@ -43,5 +43,8 @@ public class Check {
     private BigDecimal total = BigDecimal.ZERO;
 
     @Column(nullable = false)
+    private boolean paid = false;
+
+    @Column(nullable = false)
     private Instant createdAt = Instant.now();
 }

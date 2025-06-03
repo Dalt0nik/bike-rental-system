@@ -29,7 +29,7 @@ public class BookingService {
     private final ModelMapper modelMapper;
 
     private final BookingValidator bookingValidator;
-    private final BillingService billingService;
+    private final CheckService checkService;
 
     @Transactional
     public BookingDTO createBooking(CreateBookingDTO createBookingDTO, Jwt jwt) {
@@ -82,7 +82,7 @@ public class BookingService {
         bikeRepository.save(booking.getBike());
         bookingRepository.save(booking);
 
-        billingService.createAndSaveCheck(user, booking, null);
+        checkService.createAndSaveCheck(user, booking, null);
     }
 
     @Transactional

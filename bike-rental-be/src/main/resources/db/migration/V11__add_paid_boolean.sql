@@ -1,0 +1,5 @@
+ALTER TABLE checks
+    ADD paid BOOLEAN;
+
+ALTER TABLE checks
+    ALTER COLUMN paid SET NOT NULL;

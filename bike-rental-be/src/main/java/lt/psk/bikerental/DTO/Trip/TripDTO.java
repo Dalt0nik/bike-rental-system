@@ -11,4 +11,5 @@ public class TripDTO {
     private UUID bikeId;
     private UUID userId;
     private Instant startTime;
+    private Instant finishTime;
 }
