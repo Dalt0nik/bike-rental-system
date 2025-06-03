@@ -9,6 +9,7 @@ import lt.psk.bikerental.entity.BikeState;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class BikeService {
     private final BikeStationRepository bikeStationRepository;
 
     private final ModelMapper modelMapper;
+    private final WsEventSendingService wsEventSendingService;
 
     public List<BikeDTO> getAllBikes() {
         return bikeRepository.findAll().stream()
@@ -45,7 +47,9 @@ public class BikeService {
         Bike bike = modelMapper.map(createBikeDTO, Bike.class);
 
         try {
-            return modelMapper.map(bikeRepository.save(bike), BikeDTO.class);
+            Bike saved = bikeRepository.save(bike);
+            wsEventSendingService.sendStationUpdated(bike.getCurStation());
+            return modelMapper.map(saved, BikeDTO.class);
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Short unique name already exists. Please retry.");
         }
@@ -66,6 +70,7 @@ public class BikeService {
         }
 
         List<Bike> saved = bikeRepository.saveAll(bikes);
+        wsEventSendingService.sendStationUpdated(station);
         return saved.stream().map(x -> modelMapper.map(x, BikeDTO.class)).toList();
     }
 
@@ -82,13 +87,14 @@ public class BikeService {
         Bike bike = bikeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bike not found"));
 
+        bike.setState(updateDTO.getState());
+
         if (updateDTO.getCurrentBikeStationId() != null) {
             BikeStation station = bikeStationRepository.findById(updateDTO.getCurrentBikeStationId())
                     .orElseThrow(() -> new EntityNotFoundException("Station not found"));
             bike.setCurStation(station);
+            wsEventSendingService.sendStationUpdated(station);
         }
-
-        bike.setState(updateDTO.getState());
         return modelMapper.map(bikeRepository.save(bike), BikeDTO.class);
     }
 }

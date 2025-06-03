@@ -10,10 +10,12 @@ import lt.psk.bikerental.entity.Bike;
 import lt.psk.bikerental.entity.BikeStation;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BikeStationRepository;
+import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +28,7 @@ public class BikeStationService {
     private final ModelMapper modelMapper;
 
     private final BikeRepository bikeRepository;
+    private final WsEventSendingService wsEventSendingService;
 
     public List<BikeStationPreviewDTO> getAllBikeStations() {
         return bikeStationRepository.findAll().stream()
@@ -42,7 +45,9 @@ public class BikeStationService {
     @Transactional
     public BikeStationDTO createBikeStation(CreateBikeStationDTO dto) {
         BikeStation entity = modelMapper.map(dto, BikeStation.class);
+        entity.setBikes(new ArrayList<>());
         BikeStation saved = bikeStationRepository.save(entity);
+        wsEventSendingService.sendStationUpdated(saved);
 
         return modelMapper.map(saved, BikeStationDTO.class);
     }
@@ -57,6 +62,7 @@ public class BikeStationService {
             throw new RuntimeException("Bike station cannot have less capacity than current bikes");
 
         BikeStation saved = bikeStationRepository.save(station);
+        wsEventSendingService.sendStationUpdated(saved);
 
         return modelMapper.map(saved, BikeStationDTO.class);
     }
@@ -79,5 +85,7 @@ public class BikeStationService {
 
         bike.setCurStation(bikeStation);
         bikeRepository.save(bike);
+        bikeStation.getBikes().add(bike);
+        wsEventSendingService.sendStationUpdated(bikeStation);
     }
 }

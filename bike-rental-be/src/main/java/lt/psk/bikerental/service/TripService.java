@@ -4,14 +4,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lt.psk.bikerental.DTO.Trip.CreateTripDTO;
 import lt.psk.bikerental.DTO.Trip.TripDTO;
-import lt.psk.bikerental.entity.Bike;
-import lt.psk.bikerental.entity.Booking;
-import lt.psk.bikerental.entity.Trip;
-import lt.psk.bikerental.entity.User;
+import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.TripRepository;
 import lt.psk.bikerental.repository.UserRepository;
+import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -35,6 +33,7 @@ public class TripService {
     private final ModelMapper mapper;
     private final TripValidator tripValidator;
     private final CheckService checkService;
+    private final WsEventSendingService wsEventSendingService;
 
     @Transactional
     public TripDTO startTrip(CreateTripDTO dto, Jwt jwt) {
@@ -63,8 +62,10 @@ public class TripService {
         }
 
         // remove bike from station
+        BikeStation oldStation = bike.getCurStation();
         bike.setCurStation(null);
         bike.setState(IN_USE);
+        wsEventSendingService.sendStationUpdated(oldStation);
 
         return mapper.map(saved, TripDTO.class);
     }
@@ -86,6 +87,8 @@ public class TripService {
         trip.getBike().setState(FREE);
 
         bikeRepository.save(trip.getBike());
+        wsEventSendingService.sendStationUpdated(trip.getBike().getCurStation());
+
         tripRepository.save(trip);
 
         checkService.createAndSaveCheck(user, trip.getBooking(), trip);

@@ -8,6 +8,7 @@ import lt.psk.bikerental.entity.*;
 import lt.psk.bikerental.repository.BikeRepository;
 import lt.psk.bikerental.repository.BookingRepository;
 import lt.psk.bikerental.repository.UserRepository;
+import lt.psk.bikerental.service.ws.WsEventSendingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class BookingService {
 
     private final BookingValidator bookingValidator;
     private final CheckService checkService;
+    private final WsEventSendingService wsEventSendingService;
 
     @Transactional
     public BookingDTO createBooking(CreateBookingDTO createBookingDTO, Jwt jwt) {
@@ -44,6 +46,7 @@ public class BookingService {
 
         bike.setState(BikeState.BOOKED);
         bikeRepository.save(bike);
+        wsEventSendingService.sendStationUpdated(bike.getCurStation());
 
         Booking booking = new Booking();
         booking.setBike(bike);
@@ -80,6 +83,8 @@ public class BookingService {
         booking.getBike().setState(BikeState.FREE);
 
         bikeRepository.save(booking.getBike());
+        wsEventSendingService.sendStationUpdated(booking.getBike().getCurStation());
+
         bookingRepository.save(booking);
 
         checkService.createAndSaveCheck(user, booking, null);

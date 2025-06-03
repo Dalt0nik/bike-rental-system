@@ -18,6 +18,9 @@ public class WsEventSendingService {
     private final ModelMapper modelMapper;
 
     public void sendStationUpdated(BikeStation station) {
+        if (station == null)
+            return;
+
         messagingTemplate.convertAndSend(
                 "/topic/map",
                 Map.of(
